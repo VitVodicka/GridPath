@@ -1,10 +1,11 @@
 {
   "version": 2,
-  "dgSpecHash": "wna0KlNmpko=",
+  "dgSpecHash": "bXn441Uwgw0=",
   "success": true,
   "projectFilePath": "C:\\Users\\drako\\GridPath\\GridPath\\GridPath\\GridPath.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\drako\\.nuget\\packages\\dotspatial.projections\\4.0.656\\dotspatial.projections.4.0.656.nupkg.sha512",
+    "C:\\Users\\drako\\.nuget\\packages\\newtonsoft.json\\13.0.3\\newtonsoft.json.13.0.3.nupkg.sha512",
     "C:\\Users\\drako\\.nuget\\packages\\projnet\\2.0.0\\projnet.2.0.0.nupkg.sha512",
     "C:\\Users\\drako\\.nuget\\packages\\system.memory\\4.5.3\\system.memory.4.5.3.nupkg.sha512",
     "C:\\Users\\drako\\.nuget\\packages\\system.numerics.vectors\\4.5.0\\system.numerics.vectors.4.5.0.nupkg.sha512"

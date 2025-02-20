@@ -1,3 +1,4 @@
+using GridPath.Helper;
 using GridPath.Models;
 using GridPath.Services.ApiServices;
 using Microsoft.AspNetCore.Mvc;
@@ -59,6 +60,22 @@ namespace GridPath.Controllers
                 return View("Error");
             }
         }
+        public async Task<IActionResult> Polygon()
+        {
+            try
+            {
+                string parcelData = await _parcelService.GetParcelsByPolygon
+                    (CoordinateConversion.ConvertLineToRectangle(16.23, 49.29, 16.23, 49.28));
+                // Pøedání dat do View nebo jejich další zpracování
+                return View("Polygon", parcelData); // Nebo jiný zpùsob zobrazení dat
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Chyba pøi získávání dat o parcele.");
+                return View("Error");
+            }
+        }
+
 
         public IActionResult Privacy()
         {

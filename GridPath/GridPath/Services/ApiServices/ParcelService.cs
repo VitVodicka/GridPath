@@ -2,6 +2,7 @@
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 
 namespace GridPath.Services.ApiServices
 {
@@ -10,6 +11,13 @@ namespace GridPath.Services.ApiServices
         private readonly HttpClient _httpClient;
         private readonly string _apiUrl;
         private readonly string _apiKey;
+        private const double MIN_X = 904384;
+        private const double MAX_X = 1246155;
+        private const double MIN_Y = 403554;
+        private const double MAX_Y = 932266;
+
+        // Zajistíme, že offset vytvoří validní obdélník v rámci povolených hranic
+        private const double RECTANGLE_OFFSET = 100; // 100 metrů
 
         public ParcelService(HttpClient httpClient, IConfiguration configuration)
         {
@@ -86,12 +94,28 @@ namespace GridPath.Services.ApiServices
                 throw new Exception($"Chyba připojení: {ex.Message}");
             }
         }
-        public async Task<string> GetParcelsByPolygon()
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="coordinates">list of X and Y locations in KN API coordinates(EPSG:5514)</param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public async Task<string> GetParcelsByPolygon(List<(double x, double y)> coordinates)
         {
-            //TODO: Implementovat metodu pro získání parcel podle polygonu
             try
             {
-                HttpResponseMessage response = await _httpClient.GetAsync(_apiUrl);
+                string parcelUri = "/Parcely/Polygon";
+
+                // Serializace seznamu souřadnic do JSON formátu
+                string jsonCoordinates = JsonConvert.SerializeObject(coordinates);
+
+                // Zakódování JSON stringu pro použití v query parametru
+                string encodedCoordinates = Uri.EscapeDataString(jsonCoordinates);
+
+                // Sestavení celé URL s query parametrem
+                string requestUrl = $"{_apiUrl}{parcelUri}?SeznamSouradnic={encodedCoordinates}";
+
+                HttpResponseMessage response = await _httpClient.GetAsync(requestUrl);
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -108,6 +132,7 @@ namespace GridPath.Services.ApiServices
                 throw new Exception($"Chyba připojení: {ex.Message}");
             }
         }
+
     }
 
 }
