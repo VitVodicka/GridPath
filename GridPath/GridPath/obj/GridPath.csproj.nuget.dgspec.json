@@ -54,6 +54,10 @@
               "target": "Package",
               "version": "[4.0.656, )"
             },
+            "Newtonsoft.Json": {
+              "target": "Package",
+              "version": "[13.0.3, )"
+            },
             "ProjNet": {
               "target": "Package",
               "version": "[2.0.0, )"
