@@ -51,50 +51,34 @@ namespace GridPath.Helper
 
             // Provedeme převod souřadnic
             Reproject.ReprojectPoints(xy, null, wgs84, epsg5514, 0, 1);
-            return (xy[0], xy[1]);
+            return (Math.Round(xy[0],0), Math.Round(xy[1],0));
         }
         public static List<(double, double)> ConvertLineToRectangle(double firstPointX, double firstPointY, double secondPointX, double secondPointY)
         {
+            //chyba v čárkách nebo v typu zadávání nebo převodu
             polygonCoordinates.Clear();
 
-            // Převedeme první bod
-            var point1 = ConvertCoordinatesFromMapToKNApiv2(firstPointX, firstPointY);
-            var point2 = ConvertCoordinatesFromMapToKNApiv2(secondPointX, secondPointY);
+            var pointBegin = ConvertCoordinatesFromMapToKNApiv2(firstPointX, firstPointY);
+            var pointBeginRectangle = (pointBegin.x + 1, pointBegin.y);
+            var pointEnd = ConvertCoordinatesFromMapToKNApiv2(secondPointX, secondPointY);
+            var pointEndRectangle = (pointEnd.x + 1, pointEnd.y);
 
-            // Vytvoříme obdélník pomocí vypočtených bodů
-            // Použijeme RECTANGLE_OFFSET pro vytvoření obdélníku
-            polygonCoordinates.Add((
-                Math.Max(MIN_X, Math.Min(MAX_X, point1.x)),
-                Math.Max(MIN_Y, Math.Min(MAX_Y, point1.y))
-            ));
-
-            polygonCoordinates.Add((
-                Math.Max(MIN_X, Math.Min(MAX_X, point1.x + RECTANGLE_OFFSET)),
-                Math.Max(MIN_Y, Math.Min(MAX_Y, point1.y))
-            ));
-
-            polygonCoordinates.Add((
-                Math.Max(MIN_X, Math.Min(MAX_X, point2.x + RECTANGLE_OFFSET)),
-                Math.Max(MIN_Y, Math.Min(MAX_Y, point2.y))
-            ));
-
-            polygonCoordinates.Add((
-                Math.Max(MIN_X, Math.Min(MAX_X, point2.x)),
-                Math.Max(MIN_Y, Math.Min(MAX_Y, point2.y))
-            ));
-
+            polygonCoordinates.Add(pointBegin);
+            polygonCoordinates.Add(pointBeginRectangle);
+            polygonCoordinates.Add(pointEnd);
+            polygonCoordinates.Add(pointEndRectangle);
             // Pro debug vypíšeme koordináty
             PrintPolygonCoordinates();
 
             // Ověříme, že všechny body jsou v povoleném rozsahu
-            foreach (var point in polygonCoordinates)
+            /*foreach (var point in polygonCoordinates)
             {
                 if (point.Item1 < MIN_X || point.Item1 > MAX_X ||
                     point.Item2 < MIN_Y || point.Item2 > MAX_Y)
                 {
                     throw new ArgumentException($"Bod ({point.Item1}, {point.Item2}) je mimo povolený rozsah.");
                 }
-            }
+            }*/
 
             return polygonCoordinates;
         }
