@@ -105,12 +105,15 @@ namespace GridPath.Services.ApiServices
             try
             {
                 string parcelUri = "/Parcely/Polygon";
+                string json = string.Format(@"[
+                {{ ""x"": {0}, ""y"": {1} }},
+                {{ ""x"": {2}, ""y"": {3} }},
+                {{ ""x"": {4}, ""y"": {5} }}
+                ]", coordinates[0].x, coordinates[0].y, coordinates[1].x, coordinates[1].y, coordinates[2].x, coordinates[2].y);
 
-                // Serializace seznamu souřadnic do JSON formátu
-                string jsonCoordinates = JsonConvert.SerializeObject(coordinates);
 
                 // Zakódování JSON stringu pro použití v query parametru
-                string encodedCoordinates = Uri.EscapeDataString(jsonCoordinates);
+                string encodedCoordinates = Uri.EscapeDataString(json);
 
                 // Sestavení celé URL s query parametrem
                 string requestUrl = $"{_apiUrl}{parcelUri}?SeznamSouradnic={encodedCoordinates}";
