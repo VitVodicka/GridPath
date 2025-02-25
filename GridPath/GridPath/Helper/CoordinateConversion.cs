@@ -6,13 +6,6 @@ namespace GridPath.Helper
     {
         static List<(double x, double y)> polygonCoordinates = new List<(double, double)>();
 
-        private const double MIN_X = 904384;
-        private const double MAX_X = 1246155;
-        private const double MIN_Y = 403554;
-        private const double MAX_Y = 932266;
-
-        private const double RECTANGLE_OFFSET = 100; // 100 metrů
-
 
         /// <summary>
         /// Converts from map coordinates(WGS84) to KN API coordinates(EPSG:5514)
