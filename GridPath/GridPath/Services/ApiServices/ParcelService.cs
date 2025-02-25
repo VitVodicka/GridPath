@@ -74,7 +74,7 @@ namespace GridPath.Services.ApiServices
         }
         public async Task<string> GetNeighbourParcels()
         {
-            string neighbourParameters = "/Parcely/SousedniParcely/2235132101";
+            string neighbourParameters = "/Parcely/SousedniParcely/459212744";
             try
             {
                 HttpResponseMessage response = await _httpClient.GetAsync(_apiUrl+ neighbourParameters);

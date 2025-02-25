@@ -3,6 +3,7 @@ using GridPath.Models;
 using GridPath.Services.ApiServices;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
+using System.Text.Json;
 
 namespace GridPath.Controllers
 {
@@ -66,6 +67,11 @@ namespace GridPath.Controllers
             {
                 string parcelData = await _parcelService.GetParcelsByPolygon
                     (CoordinateConversion.ConvertLineToRectangle(16.23, 49.29, 16.23, 49.28));
+                List<Parcel> Data = JsonSerializer.Deserialize<List<Parcel>>(parcelData,
+            new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                List<Parcel> parcels = JsonSerializer.Deserialize<List<Parcel>>(parcelData,
+            new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
                 // Pøedání dat do View nebo jejich další zpracování
                 return View("Polygon", parcelData); // Nebo jiný zpùsob zobrazení dat
             }
