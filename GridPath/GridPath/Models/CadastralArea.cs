@@ -2,7 +2,13 @@
 {
     public class CadastralArea
     {
-        public int Code { get; set; }
+        public CadastralArea(string code, string name)
+        {
+            Code = code;
+            Name = name;
+        }
+
+        public string Code { get; set; }
         public string Name { get; set; }
     }
 

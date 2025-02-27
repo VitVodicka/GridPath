@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
+using GridPath.Models;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace GridPath.Services.ApiServices
 {
@@ -11,14 +14,10 @@ namespace GridPath.Services.ApiServices
         private readonly HttpClient _httpClient;
         private readonly string _apiUrl;
         private readonly string _apiKey;
-        private const double MIN_X = 904384;
-        private const double MAX_X = 1246155;
-        private const double MIN_Y = 403554;
-        private const double MAX_Y = 932266;
 
+        
         // Zajistíme, že offset vytvoří validní obdélník v rámci povolených hranic
-        private const double RECTANGLE_OFFSET = 100; // 100 metrů
-
+        public static HashSet<Parcel> parcelsFromAPI = new HashSet<Parcel>();
         public ParcelService(HttpClient httpClient, IConfiguration configuration)
         {
             _httpClient = httpClient;
@@ -118,17 +117,47 @@ namespace GridPath.Services.ApiServices
                 // Sestavení celé URL s query parametrem
                 string requestUrl = $"{_apiUrl}{parcelUri}?SeznamSouradnic={encodedCoordinates}";
 
-                HttpResponseMessage response = await _httpClient.GetAsync(requestUrl);
 
-                if (response.IsSuccessStatusCode)
+
+                HttpResponseMessage response = await _httpClient.GetAsync(requestUrl);
+                response.EnsureSuccessStatusCode();
+
+                using Stream stream = await response.Content.ReadAsStreamAsync();
+                using StreamReader reader = new StreamReader(stream, Encoding.UTF8);
+                using JsonTextReader jsonReader = new JsonTextReader(reader);
+
+
+                while (jsonReader.Read())
                 {
-                    return await response.Content.ReadAsStringAsync();
+                    // Hledáme začátek pole "data"
+                    if (jsonReader.TokenType == JsonToken.PropertyName && jsonReader.Value?.ToString() == "data")
+                    {
+                        jsonReader.Read(); // Přesun na začátek pole
+
+                        if (jsonReader.TokenType == JsonToken.StartArray)
+                        {
+                            while (jsonReader.Read())
+                            {
+                                if (jsonReader.TokenType == JsonToken.StartObject)
+                                {
+                                    JObject jsonParcel = JObject.Load(jsonReader);
+                                    CadastralArea cadastralArea = new CadastralArea(jsonParcel["katastralniUzemi"]["kod"].ToString(), jsonParcel["katastralniUzemi"]["nazev"].ToString());
+                                    Parcel parcel = new Parcel(jsonParcel["id"].ToString(), jsonParcel["typParcely"].ToString(), jsonParcel["druhCislovaniParcely"].ToString(),
+                                        jsonParcel["kmenoveCisloParcely"].ToString(), jsonParcel["poddeleniCislaParcely"].ToString(), cadastralArea);
+                                    
+
+                                    parcelsFromAPI.Add(parcel);
+                                    Console.WriteLine(parcel.ToString()); // Výpis jednotlivé parcely
+                                }
+                                else if (jsonReader.TokenType == JsonToken.EndArray)
+                                {
+                                    break;
+                                }
+                            }
+                        }
+                    }
                 }
-                else
-                {
-                    string responseContent = await response.Content.ReadAsStringAsync();
-                    throw new Exception($"Chyba: {response.StatusCode}, Detailní odpověď: {responseContent}");
-                }
+                return "asdasda";
             }
             catch (Exception ex)
             {
