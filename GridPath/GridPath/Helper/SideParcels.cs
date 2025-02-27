@@ -5,7 +5,7 @@ namespace GridPath.Helper
     public class SideParcels
     {
         List<Parcel> sideParcels = new List<Parcel>();
-        public List<SideParcels> GetSideParcels(double coordinatesBeginX, double coordinatesBeginY, double coordinatesEndY) 
+        /*public List<SideParcels> GetSideParcels(double coordinatesBeginX, double coordinatesBeginY, double coordinatesEndY) 
         {
             double firstMiddleCoordingateY =coordinatesBeginY+ (coordinatesEndY - coordinatesBeginY)/2;
             double secondMiddleCoordingateY = coordinatesBeginY + ((coordinatesEndY - coordinatesBeginY) / 2)*2;
@@ -30,6 +30,6 @@ namespace GridPath.Helper
                
             }
 
-        }
+        }*/
     }
 }
