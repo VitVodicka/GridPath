@@ -46,6 +46,18 @@ namespace GridPath.Helper
             Reproject.ReprojectPoints(xy, null, wgs84, epsg5514, 0, 1);
             return (Math.Round(xy[0],0), Math.Round(xy[1],0));
         }
+        /// <summary>
+        /// returns a polygon of positions
+        /// </summary>
+        /// <param name="firstPointX"></param>
+        /// <param name="firstPointY"></param>
+        /// <param name="secondPointX"></param>
+        /// <param name="secondPointY"></param>
+        /// <returns> Returns four points in the following order:
+        /// 1. Start point (pointBegin)
+        /// 2. Shifted start point (pointBeginRectangle)
+        /// 3. End point (pointEnd)
+        /// 4. Shifted end point (pointEndRectangle) </returns>
         public static List<(double, double)> ConvertLineToRectangle(double firstPointX, double firstPointY, double secondPointX, double secondPointY)
         {
             //chyba v čárkách nebo v typu zadávání nebo převodu
