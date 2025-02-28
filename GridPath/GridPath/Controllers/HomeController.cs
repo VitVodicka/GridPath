@@ -11,6 +11,8 @@ namespace GridPath.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly ParcelService _parcelService;
+       
+        public static HashSet<Parcel> parcelsFromAPI = new HashSet<Parcel>();
 
         // Konstruktor pro injektování ParcelService
         public HomeController(ILogger<HomeController> logger, ParcelService parcelService)
@@ -67,10 +69,6 @@ namespace GridPath.Controllers
             {
                 string parcelData = await _parcelService.GetParcelsByPolygon
                     (CoordinateConversion.ConvertLineToRectangle(16.23, 49.29, 16.23, 49.28));
-                List<Parcel> Data = JsonSerializer.Deserialize<List<Parcel>>(parcelData,
-            new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-                List<Parcel> parcels = JsonSerializer.Deserialize<List<Parcel>>(parcelData,
-            new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
 
                 // Pøedání dat do View nebo jejich další zpracování
                 return View("Polygon", parcelData); // Nebo jiný zpùsob zobrazení dat
