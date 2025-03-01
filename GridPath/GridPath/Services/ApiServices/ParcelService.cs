@@ -107,7 +107,11 @@ namespace GridPath.Services.ApiServices
             {
                 
                 CalculateApiParcels(_parcelCalculator.CalculateMainParcelAreaPoints(coordinates));
-
+                List<string> sideParcels = _parcelCalculator.CalculateSideParcelAreaPoints(coordinates);
+                for (int i = 0; i < sideParcels.Count; i++)
+                {
+                    CalculateApiParcels(sideParcels[i]);
+                }
 
                 return "Parcely not implemented";
 
