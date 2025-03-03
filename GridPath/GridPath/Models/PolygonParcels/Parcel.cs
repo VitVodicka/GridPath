@@ -1,4 +1,4 @@
-﻿namespace GridPath.Models
+﻿namespace GridPath.Models.PolygonParcels
 {
     public class Parcel
     {
