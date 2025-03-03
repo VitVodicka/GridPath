@@ -1,5 +1,7 @@
 using GridPath.Helper;
 using GridPath.Models;
+using GridPath.Models.Parcels;
+using GridPath.Models.PolygonParcels;
 using GridPath.Services.ApiServices;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
@@ -12,7 +14,8 @@ namespace GridPath.Controllers
         private readonly ILogger<HomeController> _logger;
         private readonly ParcelService _parcelService;
        
-        public static HashSet<Parcel> parcelsFromAPI = new HashSet<Parcel>();
+        public static HashSet<Parcel> parcelsFromAPIPolygon = new HashSet<Parcel>();
+        public static HashSet<DetailedParcel> parcelsParameters = new HashSet<DetailedParcel>();
 
         // Konstruktor pro injektování ParcelService
         public HomeController(ILogger<HomeController> logger, ParcelService parcelService)
@@ -53,9 +56,10 @@ namespace GridPath.Controllers
         {
             try
             {
-                string parcelData = await _parcelService.GetParcelFromId();
+                return  View("Parcel","data");
+                //string parcelData = await _parcelService.GetParcelFromId();
                 // Pøedání dat do View nebo jejich další zpracování
-                return View("ParcelId", parcelData); // Nebo jiný zpùsob zobrazení dat
+               // return View("ParcelId", parcelData); // Nebo jiný zpùsob zobrazení dat
             }
             catch (Exception ex)
             {
