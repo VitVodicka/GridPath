@@ -2,8 +2,15 @@
 {
     public class DefinicniBod
     {
-        public long Id { get; set; }
-        public double X { get; set; }
-        public double Y { get; set; }
+        public DefinicniBod(string id, string x, string y)
+        {
+            Id = id;
+            X = x;
+            Y = y;
+        }
+
+        public string Id { get; set; }
+        public string X { get; set; }
+        public string Y { get; set; }
     }
 }

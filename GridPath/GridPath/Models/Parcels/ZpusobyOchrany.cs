@@ -2,7 +2,13 @@
 {
     public class ZpusobyOchrany
     {
-        public int Kod { get; set; }
+        public ZpusobyOchrany(string kod, string nazev)
+        {
+            Kod = kod;
+            Nazev = nazev;
+        }
+
+        public string Kod { get; set; }
         public string Nazev { get; set; }
     }
 }
