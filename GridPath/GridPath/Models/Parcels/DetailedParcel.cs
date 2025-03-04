@@ -2,20 +2,39 @@
 {
     public class DetailedParcel
     {
-        public long Id { get; set; }
+        public DetailedParcel(string id, string typParcely, string druhCislovaniParcely, string kmenoveCisloParcely, string poddeleniCislaParcely, CadastralArea katastralniUzemi, string vymera, LV lv, DruhPozemku druhPozemku, string stavba, string pravoStavby, DefinicniBod definicniBod, string zpusobVyuziti, ZpusobyOchrany zpusobyOchrany, string rizeniPlomby)
+        {
+            Id = id;
+            TypParcely = typParcely;
+            DruhCislovaniParcely = druhCislovaniParcely;
+            KmenoveCisloParcely = kmenoveCisloParcely;
+            PoddeleniCislaParcely = poddeleniCislaParcely;
+            KatastralniUzemi = katastralniUzemi;
+            Vymera = vymera;
+            Lv = lv;
+            DruhPozemku = druhPozemku;
+            Stavba = stavba;
+            PravoStavby = pravoStavby;
+            DefinicniBod = definicniBod;
+            ZpusobVyuziti = zpusobVyuziti;
+            ZpusobyOchrany = zpusobyOchrany;
+            RizeniPlomby = rizeniPlomby;
+        }
+
+        public string Id { get; set; }
         public string TypParcely { get; set; }
-        public int DruhCislovaniParcely { get; set; }
-        public int KmenoveCisloParcely { get; set; }
-        public int PoddeleniCislaParcely { get; set; }
+        public string DruhCislovaniParcely { get; set; }
+        public string KmenoveCisloParcely { get; set; }
+        public string PoddeleniCislaParcely { get; set; }
         public CadastralArea KatastralniUzemi { get; set; }
-        public double Vymera { get; set; }
+        public string Vymera { get; set; }
         public LV Lv { get; set; }
         public DruhPozemku DruhPozemku { get; set; }
-        public object Stavba { get; set; }
-        public object PravoStavby { get; set; }
+        public string Stavba { get; set; }
+        public string PravoStavby { get; set; }
         public DefinicniBod DefinicniBod { get; set; }
-        public object ZpusobVyuziti { get; set; }
-        public List<ZpusobyOchrany> ZpusobyOchrany { get; set; }
-        public List<object> RizeniPlomby { get; set; }
+        public string ZpusobVyuziti { get; set; }
+        public ZpusobyOchrany ZpusobyOchrany { get; set; }
+        public string RizeniPlomby { get; set; }
     }
 }

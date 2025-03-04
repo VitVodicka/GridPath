@@ -56,6 +56,7 @@ namespace GridPath.Controllers
         {
             try
             {
+                var something = await _parcelService.GetParcelFromId("459379744");
                 return  View("Parcel","data");
                 //string parcelData = await _parcelService.GetParcelFromId();
                 // Pøedání dat do View nebo jejich další zpracování

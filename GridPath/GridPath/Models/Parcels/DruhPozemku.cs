@@ -2,7 +2,13 @@
 {
     public class DruhPozemku
     {
-        public int Kod { get; set; }
+        public DruhPozemku(string kod, string nazev)
+        {
+            Kod = kod;
+            Nazev = nazev;
+        }
+
+        public string Kod { get; set; }
         public string Nazev { get; set; }
     }
 }
