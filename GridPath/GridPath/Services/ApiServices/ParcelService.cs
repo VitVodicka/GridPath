@@ -106,11 +106,14 @@ namespace GridPath.Services.ApiServices
             try
             {
                 
-                CalculateApiParcels(_parcelCalculator.CalculateMainParcelAreaPoints(coordinates));
+                await CalculateApiParcels(_parcelCalculator.CalculateMainParcelAreaPoints(coordinates));            
+
+                //await CalculateApiParcels(_parcelCalculator.CalculateMainParcelAreaPoints(coordinates));
                 List<string> sideParcels = _parcelCalculator.CalculateSideParcelAreaPoints(coordinates);
+               // await CalculateApiParcels(sideParcels[0]);
                 for (int i = 0; i < sideParcels.Count; i++)
                 {
-                    CalculateApiParcels(sideParcels[i]);
+                    await CalculateApiParcels(sideParcels[i]);
                 }
 
                 return "Parcely not implemented";
@@ -122,22 +125,31 @@ namespace GridPath.Services.ApiServices
                 throw new Exception($"Chyba připojení: {ex.Message}");
             }
         }
-        public async void CalculateApiParcels(string json)
+        public async Task CalculateApiParcels(string json)
         {
-            string parcelUri = "/Parcely/Polygon";
-            // Zakódování JSON stringu pro použití v query parametru
-            string encodedCoordinates = Uri.EscapeDataString(json);
+            try
+            {
+                string parcelUri = "/Parcely/Polygon";
 
-            // Sestavení celé URL s query parametrem
-            string requestUrl = $"{_apiUrl}{parcelUri}?SeznamSouradnic={encodedCoordinates}";
+                // Správné zakódování JSON do URL parametru
+               string encodedCoordinates = Uri.EscapeDataString(json);
 
+                HttpResponseMessage response = await _httpClient.GetAsync($"{_apiUrl}{parcelUri}?SeznamSouradnic={json}");
 
+                if (!response.IsSuccessStatusCode)
+                {
+                    string error = await response.Content.ReadAsStringAsync();
+                    Console.WriteLine($"❌ Chyba API: {response.StatusCode} - {error}");
+                    return;
+                }
 
-            HttpResponseMessage response = await _httpClient.GetAsync(requestUrl);
-            response.EnsureSuccessStatusCode();
-
-            using Stream stream = await response.Content.ReadAsStreamAsync();
-            new JsonParser().ParseParcelData(stream);
+                using Stream stream = await response.Content.ReadAsStreamAsync();
+                new JsonParser().ParseParcelData(stream);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Chyba připojení: {ex.Message}");
+            }
         }
 
     }
