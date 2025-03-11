@@ -1,4 +1,5 @@
 ﻿using DotSpatial.Projections;
+using System.Security.Cryptography.Xml;
 
 namespace GridPath.Helper
 {
@@ -94,6 +95,15 @@ namespace GridPath.Helper
             {
                 Console.WriteLine($"X: {coordinate.x}, Y: {coordinate.y}");
             }
+        }
+        public static List<(double, double)> ConvertPointsToList(double x1, double y1, double x2, double y2, double x3, double y3, double x4, double y4)
+        {
+            List<(double x, double y)> points = new List<(double x, double y)>();
+            points.Add((x1, y1));
+            points.Add((x2, y2));
+            points.Add((x3, y3));
+            points.Add((x4, y4));
+            return points;
         }
     }
 }
