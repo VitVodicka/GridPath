@@ -15,20 +15,16 @@
       "RelativeMoniker": "D:0:0:{30BD0007-FC06-4A48-A95C-C1D45C1A4640}|GridPath\\GridPath.csproj|solutionrelative:gridpath\\controllers\\homecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{30BD0007-FC06-4A48-A95C-C1D45C1A4640}|GridPath\\GridPath.csproj|c:\\users\\drako\\gridpath\\gridpath\\gridpath\\helper\\coordinateconversion.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{30BD0007-FC06-4A48-A95C-C1D45C1A4640}|GridPath\\GridPath.csproj|solutionrelative:gridpath\\helper\\coordinateconversion.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{30BD0007-FC06-4A48-A95C-C1D45C1A4640}|GridPath\\GridPath.csproj|c:\\users\\drako\\gridpath\\gridpath\\gridpath\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
-      "RelativeMoniker": "D:0:0:{30BD0007-FC06-4A48-A95C-C1D45C1A4640}|GridPath\\GridPath.csproj|solutionrelative:gridpath\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+      "AbsoluteMoniker": "D:0:0:{30BD0007-FC06-4A48-A95C-C1D45C1A4640}|GridPath\\GridPath.csproj|c:\\users\\drako\\gridpath\\gridpath\\gridpath\\helper\\jsonparser.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{30BD0007-FC06-4A48-A95C-C1D45C1A4640}|GridPath\\GridPath.csproj|solutionrelative:gridpath\\helper\\jsonparser.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{30BD0007-FC06-4A48-A95C-C1D45C1A4640}|GridPath\\GridPath.csproj|c:\\users\\drako\\gridpath\\gridpath\\gridpath\\models\\cadastralarea.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{30BD0007-FC06-4A48-A95C-C1D45C1A4640}|GridPath\\GridPath.csproj|solutionrelative:gridpath\\models\\cadastralarea.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{30BD0007-FC06-4A48-A95C-C1D45C1A4640}|GridPath\\GridPath.csproj|c:\\users\\drako\\gridpath\\gridpath\\gridpath\\helper\\jsonparser.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{30BD0007-FC06-4A48-A95C-C1D45C1A4640}|GridPath\\GridPath.csproj|solutionrelative:gridpath\\helper\\jsonparser.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{30BD0007-FC06-4A48-A95C-C1D45C1A4640}|GridPath\\GridPath.csproj|c:\\users\\drako\\gridpath\\gridpath\\gridpath\\helper\\coordinateconversion.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{30BD0007-FC06-4A48-A95C-C1D45C1A4640}|GridPath\\GridPath.csproj|solutionrelative:gridpath\\helper\\coordinateconversion.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{30BD0007-FC06-4A48-A95C-C1D45C1A4640}|GridPath\\GridPath.csproj|c:\\users\\drako\\gridpath\\gridpath\\gridpath\\models\\errorviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -60,7 +56,7 @@
               "RelativeDocumentMoniker": "GridPath\\Services\\ApiServices\\ParcelService.cs",
               "ToolTip": "C:\\Users\\drako\\GridPath\\GridPath\\GridPath\\Services\\ApiServices\\ParcelService.cs",
               "RelativeToolTip": "GridPath\\Services\\ApiServices\\ParcelService.cs",
-              "ViewState": "AgIAAH8AAAAAAAAAAIAwwIMAAAAQAAAAAAAAAA==",
+              "ViewState": "AgIAAG4AAAAAAAAAAIAwwHoAAAAMAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-02-16T10:31:20.201Z",
               "IsPinned": true,
@@ -74,26 +70,27 @@
               "RelativeDocumentMoniker": "GridPath\\Helper\\ParcelCalculator.cs",
               "ToolTip": "C:\\Users\\drako\\GridPath\\GridPath\\GridPath\\Helper\\ParcelCalculator.cs",
               "RelativeToolTip": "GridPath\\Helper\\ParcelCalculator.cs",
-              "ViewState": "AgIAAFkAAAAAAAAAAAD4v2wAAAAIAAAAAAAAAA==",
+              "ViewState": "AgIAAFoAAAAAAAAAAAAtwGYAAAANAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-03-01T12:26:00.537Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 3,
               "Title": "JsonParser.cs",
               "DocumentMoniker": "C:\\Users\\drako\\GridPath\\GridPath\\GridPath\\Helper\\JsonParser.cs",
               "RelativeDocumentMoniker": "GridPath\\Helper\\JsonParser.cs",
               "ToolTip": "C:\\Users\\drako\\GridPath\\GridPath\\GridPath\\Helper\\JsonParser.cs",
               "RelativeToolTip": "GridPath\\Helper\\JsonParser.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAAaAAAAAAAAAA==",
+              "ViewState": "AgIAAAsAAAAAAAAAAAAAwAsAAAAaAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-02-28T18:27:17.65Z"
+              "WhenOpened": "2025-02-28T18:27:17.65Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 4,
               "Title": "CadastralArea.cs",
               "DocumentMoniker": "C:\\Users\\drako\\GridPath\\GridPath\\GridPath\\Models\\CadastralArea.cs",
               "RelativeDocumentMoniker": "GridPath\\Models\\CadastralArea.cs",
@@ -101,19 +98,7 @@
               "RelativeToolTip": "GridPath\\Models\\CadastralArea.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAuwAcAAAAVAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-02-24T19:24:35.359Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "appsettings.json",
-              "DocumentMoniker": "C:\\Users\\drako\\GridPath\\GridPath\\GridPath\\appsettings.json",
-              "RelativeDocumentMoniker": "GridPath\\appsettings.json",
-              "ToolTip": "C:\\Users\\drako\\GridPath\\GridPath\\GridPath\\appsettings.json",
-              "RelativeToolTip": "GridPath\\appsettings.json",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAAtAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2025-02-22T15:54:36.957Z",
+              "WhenOpened": "2025-02-24T19:24:35.359Z",
               "EditorCaption": ""
             },
             {
@@ -124,14 +109,14 @@
               "RelativeDocumentMoniker": "GridPath\\Controllers\\HomeController.cs",
               "ToolTip": "C:\\Users\\drako\\GridPath\\GridPath\\GridPath\\Controllers\\HomeController.cs",
               "RelativeToolTip": "GridPath\\Controllers\\HomeController.cs",
-              "ViewState": "AgIAADkAAAAAAAAAAAAhwEYAAAA3AAAAAAAAAA==",
+              "ViewState": "AgIAADoAAAAAAAAAAAAMwEUAAAA5AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-02-15T14:12:46.182Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 5,
               "Title": "CoordinateConversion.cs",
               "DocumentMoniker": "C:\\Users\\drako\\GridPath\\GridPath\\GridPath\\Helper\\CoordinateConversion.cs",
               "RelativeDocumentMoniker": "GridPath\\Helper\\CoordinateConversion.cs",
@@ -139,12 +124,11 @@
               "RelativeToolTip": "GridPath\\Helper\\CoordinateConversion.cs",
               "ViewState": "AgIAAEcAAAAAAAAAAAAtwGgAAAAhAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-02-18T09:05:29.161Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-02-18T09:05:29.161Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 6,
               "Title": "ErrorViewModel.cs",
               "DocumentMoniker": "C:\\Users\\drako\\GridPath\\GridPath\\GridPath\\Models\\ErrorViewModel.cs",
               "RelativeDocumentMoniker": "GridPath\\Models\\ErrorViewModel.cs",
@@ -156,7 +140,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 9,
+              "DocumentIndex": 8,
               "Title": "_Layout.cshtml",
               "DocumentMoniker": "C:\\Users\\drako\\GridPath\\GridPath\\GridPath\\Views\\Shared\\_Layout.cshtml",
               "RelativeDocumentMoniker": "GridPath\\Views\\Shared\\_Layout.cshtml",
@@ -168,7 +152,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
+              "DocumentIndex": 7,
               "Title": "launchSettings.json",
               "DocumentMoniker": "C:\\Users\\drako\\GridPath\\GridPath\\GridPath\\Properties\\launchSettings.json",
               "RelativeDocumentMoniker": "GridPath\\Properties\\launchSettings.json",

@@ -92,10 +92,24 @@ namespace GridPath.Helper
         }
         public void DivideRectangleIntoSmallerParcels(double numberOfDivision, List<(double, double)> points)
         {
-            //dostat body 1-4, 2-3
+            //dostat body 1-4
             List<(double, double)> pointsFromFirstLine = DivideLineIntoPoints(points[0].Item1, points[0].Item2, points[3].Item1, points[3].Item2, numberOfDivision);
+            //dostat body 2-3
             List<(double, double)> pointsFromSecondLine = DivideLineIntoPoints(points[1].Item1, points[1].Item2, points[2].Item1, points[2].Item2, numberOfDivision);
             
+            //TODO problem s zaindexem za polovinou, 2 řešeni vyřešit ten posledni index
+            List<string> jsonOfSideParcels = new List<string>();
+            for (int i = 0; i < numberOfDivision-1; i++)
+            {
+                string json = string.Format(@"[
+                {{ ""x"": {0}, ""y"": {1} }},
+                {{ ""x"": {2}, ""y"": {3} }},
+                {{ ""x"": {4}, ""y"": {5} }},
+                {{ ""x"": {6}, ""y"": {7} }}
+                ]", pointsFromFirstLine[i].Item1, pointsFromFirstLine[i].Item2, pointsFromSecondLine[i].Item1, pointsFromSecondLine[i].Item2, pointsFromSecondLine[i + 1].Item1, pointsFromSecondLine[i + 1].Item2, pointsFromFirstLine[i + 1].Item1, pointsFromFirstLine[i + 1].Item2);
+                jsonOfSideParcels.Add(json);
+            }
+
             /*List<(double, double)> pointsv2 = new List<(double, double)>();
             pointsv2.Add((pointsFromFirstLine[0].Item1, pointsFromFirstLine[0].Item2));
             pointsv2.Add((pointsFromSecondLine[0].Item1, pointsFromSecondLine[0].Item2));
