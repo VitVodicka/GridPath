@@ -107,10 +107,7 @@ namespace GridPath.Services.ApiServices
             {
                 
                 await CalculateApiParcels(_parcelCalculator.CalculateMainParcelAreaPoints(coordinates));            
-
-                //await CalculateApiParcels(_parcelCalculator.CalculateMainParcelAreaPoints(coordinates));
                 List<string> sideParcels = _parcelCalculator.CalculateSideParcelAreaPoints(coordinates);
-               // await CalculateApiParcels(sideParcels[0]);
                 for (int i = 0; i < sideParcels.Count; i++)
                 {
                     await CalculateApiParcels(sideParcels[i]);

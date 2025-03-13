@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("GridPath")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+3d7a25410c139eca1cd0d76e3bfcf9d91bf91879")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+bb18081e18d13ee7fbd59a596b5a792122f4215f")]
 [assembly: System.Reflection.AssemblyProductAttribute("GridPath")]
 [assembly: System.Reflection.AssemblyTitleAttribute("GridPath")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
