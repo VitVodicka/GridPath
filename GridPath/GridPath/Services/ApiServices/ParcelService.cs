@@ -2,8 +2,10 @@
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using GridPath.Controllers;
 using GridPath.Helper;
 using GridPath.Models;
+using GridPath.Models.Parcels;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -50,28 +52,23 @@ namespace GridPath.Services.ApiServices
                 throw new Exception($"Chyba připojení: {ex.Message}");
             }
         }
-        public async Task<string> GetParcelFromId()
+        public async Task<DetailedParcel> GetParcelFromId(string id)
         {
-            string parametersId = "/Parcely/2235132101";
-            try
-            {
-                
-                HttpResponseMessage response = await _httpClient.GetAsync(_apiUrl+parametersId);
+            string parametersId = "/Parcely/"+id;
+            HttpResponseMessage response = await _httpClient.GetAsync(_apiUrl + parametersId);
+            response.EnsureSuccessStatusCode();
 
-                if (response.IsSuccessStatusCode)
-                {
-                    return await response.Content.ReadAsStringAsync();
-                }
-                else
-                {
-                    string responseContent = await response.Content.ReadAsStringAsync();
-                    throw new Exception($"Chyba: {response.StatusCode}, Detailní odpověď: {responseContent}");
-                }
-            }
-            catch (Exception ex)
-            {
-                throw new Exception($"Chyba připojení: {ex.Message}");
-            }
+            using Stream stream = await response.Content.ReadAsStreamAsync();
+            return await new JsonParser().ParseDetailedParcelData(stream);
+
+
+           
+        }
+        public async Task GetMainParametersOfParcels()
+        {
+            foreach (var parcel in HomeController.parcelsFromAPIPolygon) 
+                HomeController.parcelsParameters.Add(await GetParcelFromId(parcel.Id));
+            
         }
         public async Task<string> GetNeighbourParcels()
         {
