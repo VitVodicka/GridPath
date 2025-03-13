@@ -139,7 +139,7 @@ namespace GridPath.Services.ApiServices
                 }
 
                 using Stream stream = await response.Content.ReadAsStreamAsync();
-                new JsonParser().ParseParcelData(stream);
+                new JsonParser().ParsePolygonParcelData(stream);
             }
             catch (Exception ex)
             {
