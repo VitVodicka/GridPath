@@ -56,7 +56,7 @@
               "RelativeDocumentMoniker": "GridPath\\Services\\ApiServices\\ParcelService.cs",
               "ToolTip": "C:\\Users\\drako\\GridPath\\GridPath\\GridPath\\Services\\ApiServices\\ParcelService.cs",
               "RelativeToolTip": "GridPath\\Services\\ApiServices\\ParcelService.cs",
-              "ViewState": "AgIAAGQAAAAAAAAAAAAtwHwAAAA6AAAAAAAAAA==",
+              "ViewState": "AgIAAF0AAAAAAAAAAAAlwGgAAAAeAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-02-16T10:31:20.201Z",
               "IsPinned": true,
@@ -72,8 +72,7 @@
               "RelativeToolTip": "GridPath\\Helper\\ParcelCalculator.cs",
               "ViewState": "AgIAADMAAAAAAAAAAAAywFoAAAAQAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-03-01T12:26:00.537Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-03-01T12:26:00.537Z"
             },
             {
               "$type": "Document",
@@ -85,8 +84,7 @@
               "RelativeToolTip": "GridPath\\Helper\\JsonParser.cs",
               "ViewState": "AgIAABEAAAAAAAAAAAAAwAsAAAAaAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-02-28T18:27:17.65Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-02-28T18:27:17.65Z"
             },
             {
               "$type": "Document",
