@@ -1,4 +1,7 @@
-﻿using GridPath.Models;
+﻿using GridPath.Controllers;
+using GridPath.Helper.Dictionaries;
+using GridPath.Models;
+using GridPath.Models.Parcels;
 using System.Globalization;
 
 namespace GridPath.Helper
@@ -102,6 +105,67 @@ namespace GridPath.Helper
                 body.Add((x, y));
             }
             return body;
+        }
+        public List<DetailRatedParcel> CalaculateLandPoints()
+        {
+            List<DetailRatedParcel> ratedParcels = new List<DetailRatedParcel>();
+            double points ;
+            foreach (var parcel in HomeController.parcelsParameters)
+            {
+                points = 100;
+                var LandKey = (parcel.DruhPozemku.Nazev, int.Parse(parcel.DruhPozemku.Kod));
+
+                if (LandDictionaries.NotGoodLandTypes.TryGetValue(LandKey, out int value))
+                {
+                    if(parcel.DruhPozemku.Nazev == "ostatní plocha")
+                    {
+                        if (LandDictionaries.NotPreferedLandUsages.TryGetValue(LandKey, out int valueUsages))
+                        {
+                            points += valueUsages;
+                        }
+                        else
+                        {
+                            points += 0;
+                            points += value;
+                        }
+                    }
+                    else
+                    {
+                        points += value;
+                    }
+                    
+                }
+                else
+                {
+                    //TODO check value
+                    points += 100;
+                }
+                if (parcel.ZpusobyOchrany.Nazev!=""&&LandDictionaries.ProtectionScores.TryGetValue(LandKey, out int valueProtection))
+                {
+                    points += valueProtection;
+                }
+                else
+                {
+                    points += 100;
+                }
+                if(parcel.Stavba == "")
+                {
+                    points = 0;
+                }
+                if(parcel.PravoStavby!= "")
+                {
+                    //TODO ALERT
+                }
+                if(parcel.RizeniPlomby != "")
+                {
+                    //TODO ALERT
+                }
+                DetailRatedParcel detailedParcel = new DetailRatedParcel(parcel, points);
+                ratedParcels.Add(detailedParcel);
+
+
+            }
+            return ratedParcels;
         }
 
 
