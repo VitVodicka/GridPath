@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -66,7 +67,7 @@ namespace GridPath.Services.ApiServices
         }
         public async Task GetMainParametersOfParcels()
         {
-            foreach (var parcel in HomeController.parcelsFromAPIPolygon) 
+            foreach (var parcel in HomeController.parcelsFromAPIPolygon.Take(10)) 
                 HomeController.parcelsParameters.Add(await GetParcelFromId(parcel.Id));
             
         }
@@ -110,7 +111,8 @@ namespace GridPath.Services.ApiServices
                 {
                     await CalculateApiParcels(sideParcels[i]);
                 }
-
+                await GetMainParametersOfParcels();
+                List < DetailRatedParcel > parcels = _parcelCalculator.CalaculateLandPoints();
                 return "Parcely not implemented";
 
 

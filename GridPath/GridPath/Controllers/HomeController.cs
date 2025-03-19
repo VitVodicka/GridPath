@@ -75,6 +75,7 @@ namespace GridPath.Controllers
                 string parcelData = await _parcelService.GetParcelsByPolygon
                     (CoordinateConversion.ConvertLineToRectangle(16.23, 49.29, 16.23, 49.28));
 
+
                 // Pøedání dat do View nebo jejich další zpracování
                 return View("Polygon", parcelData); // Nebo jiný zpùsob zobrazení dat
             }
