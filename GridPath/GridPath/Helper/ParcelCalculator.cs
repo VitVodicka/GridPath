@@ -110,9 +110,11 @@ namespace GridPath.Helper
         {
             List<DetailRatedParcel> ratedParcels = new List<DetailRatedParcel>();
             double points ;
+            
             foreach (var parcel in HomeController.parcelsParameters)
             {
                 points = 100;
+                string warning = "";
                 var LandKey = (parcel.DruhPozemku.Nazev, int.Parse(parcel.DruhPozemku.Kod));
 
                 if (LandDictionaries.NotGoodLandTypes.TryGetValue(LandKey, out int value))
@@ -154,13 +156,13 @@ namespace GridPath.Helper
                 }
                 if(parcel.PravoStavby!= "")
                 {
-                    //TODO ALERT
+                    warning += "Právo stavby";
                 }
                 if(parcel.RizeniPlomby != "")
                 {
-                    //TODO ALERT
+                    warning+= " " + parcel.RizeniPlomby;
                 }
-                DetailRatedParcel detailedParcel = new DetailRatedParcel(parcel, points);
+                DetailRatedParcel detailedParcel = new DetailRatedParcel(parcel, points,warning);
                 ratedParcels.Add(detailedParcel);
 
 

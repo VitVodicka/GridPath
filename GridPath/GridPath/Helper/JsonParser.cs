@@ -49,40 +49,47 @@ namespace GridPath.Helper
 
         public async Task<DetailedParcel> ParseDetailedParcelData(Stream stream)
         {
-            using StreamReader reader = new StreamReader(stream, Encoding.UTF8);
-            using JsonTextReader jsonReader = new JsonTextReader(reader);
-            DetailedParcel parcel= null;
-            while (jsonReader.Read())
+            try
             {
-                // Hledáme začátek pole "data"
-                if (jsonReader.TokenType == JsonToken.PropertyName && jsonReader.Value?.ToString() == "data")
+                using StreamReader reader = new StreamReader(stream, Encoding.UTF8);
+                using JsonTextReader jsonReader = new JsonTextReader(reader);
+                DetailedParcel parcel = null;
+                while (jsonReader.Read())
                 {
-                    jsonReader.Read(); // Přesun na začátek pole
-                    JObject jsonParcel = JObject.Load(jsonReader);
-                    CadastralArea cadastralArea = new CadastralArea(jsonParcel["katastralniUzemi"]["kod"].ToString(), jsonParcel["katastralniUzemi"]["nazev"].ToString());
-                    LV lv = new LV(jsonParcel["lv"]["id"].ToString(), jsonParcel["lv"]["cislo"].ToString(),cadastralArea);
-                    DruhPozemku fieldType = new DruhPozemku(jsonParcel["druhPozemku"]["kod"].ToString(), jsonParcel["druhPozemku"]["nazev"].ToString());
-                    DefinicniBod point = new DefinicniBod(jsonParcel["definicniBod"]["id"].ToString(), jsonParcel["definicniBod"]["x"].ToString(), jsonParcel["definicniBod"]["y"].ToString());
-
-                    ZpusobyOchrany ochrana = null;
-                    if (jsonParcel["zpusobyOchrany"].ToString()!= "[]")
+                    // Hledáme začátek pole "data"
+                    if (jsonReader.TokenType == JsonToken.PropertyName && jsonReader.Value?.ToString() == "data")
                     {
-                        ochrana = new ZpusobyOchrany(jsonParcel["zpusobyOchrany"]["kod"].ToString(), jsonParcel["zpusobyOchrany"]["nazev"].ToString());
-                    }
-                    
+                        jsonReader.Read(); // Přesun na začátek pole
+                        JObject jsonParcel = JObject.Load(jsonReader);
+                        CadastralArea cadastralArea = new CadastralArea(jsonParcel["katastralniUzemi"]["kod"].ToString(), jsonParcel["katastralniUzemi"]["nazev"].ToString());
+                        LV lv = new LV(jsonParcel["lv"]["id"].ToString(), jsonParcel["lv"]["cislo"].ToString(), cadastralArea);
+                        DruhPozemku fieldType = new DruhPozemku(jsonParcel["druhPozemku"]["kod"].ToString(), jsonParcel["druhPozemku"]["nazev"].ToString());
+                        DefinicniBod point = new DefinicniBod(jsonParcel["definicniBod"]["id"].ToString(), jsonParcel["definicniBod"]["x"].ToString(), jsonParcel["definicniBod"]["y"].ToString());
 
-                    parcel = new DetailedParcel(jsonParcel["id"].ToString(), jsonParcel["typParcely"].ToString(), jsonParcel["druhCislovaniParcely"].ToString(),
-                    jsonParcel["kmenoveCisloParcely"].ToString(), jsonParcel["poddeleniCislaParcely"].ToString(), cadastralArea,
-                    jsonParcel["vymera"].ToString(), lv, fieldType, jsonParcel["stavba"].ToString(), jsonParcel["pravoStavby"].ToString(), point, 
-                    jsonParcel["zpusobVyuziti"].ToString(),ochrana, jsonParcel["rizeniPlomby"].ToString());
+                        ZpusobyOchrany ochrana = null;
+                        if (jsonParcel["zpusobyOchrany"].ToString() != "[]")
+                        {
+                            ochrana = new ZpusobyOchrany(jsonParcel["zpusobyOchrany"][0]["kod"].ToString(), jsonParcel["zpusobyOchrany"][0]["nazev"].ToString());
+                        }
+
+
+                        parcel = new DetailedParcel(jsonParcel["id"].ToString(), jsonParcel["typParcely"].ToString(), jsonParcel["druhCislovaniParcely"].ToString(),
+                        jsonParcel["kmenoveCisloParcely"].ToString(), jsonParcel["poddeleniCislaParcely"].ToString(), cadastralArea,
+                        jsonParcel["vymera"].ToString(), lv, fieldType, jsonParcel["stavba"].ToString(), jsonParcel["pravoStavby"].ToString(), point,
+                        jsonParcel["zpusobVyuziti"].ToString(), ochrana, jsonParcel["rizeniPlomby"].ToString());
+
+                    }
+
+
 
                 }
-                
-
+                return parcel;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Chyba při parsování dat: {ex.Message}");
 
             }
-            return parcel;
-            
         }
     }
 }
