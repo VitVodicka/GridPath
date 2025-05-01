@@ -99,8 +99,8 @@ namespace GridPath.Services.ApiServices
 
             foreach (var parcel in HomeController.parcelsFromAPIPolygon)
             {
-                if (count >= limit)
-                    break;
+                //if (count >= limit)
+                   // break;
 
                 HomeController.parcelsParameters.Add(await GetParcelFromId(parcel.Id));
                 count++;
@@ -148,7 +148,8 @@ namespace GridPath.Services.ApiServices
                     await CalculateApiParcels(sideParcels[i]);
                 }*/
                 await GetMainParametersOfParcels();
-                await _parcelCalculator.GetGridOfRatedParcels(_parcelCalculator.CalaculateLandPoints());
+                //TODO dat tam místa od do
+                var something = await _parcelCalculator.DijkstraPath(await _parcelCalculator.GetGridOfRatedParcels(_parcelCalculator.CalaculateLandPoints()));
 
 
 

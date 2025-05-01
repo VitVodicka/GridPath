@@ -172,7 +172,7 @@ namespace GridPath.Helper
             }
             return ratedParcels;
         }
-        public async Task GetGridOfRatedParcels(List<DetailRatedParcel> ratedParcels)
+        public async Task<Dictionary<(int x, int y), BunkaVGridu>> GetGridOfRatedParcels(List<DetailRatedParcel> ratedParcels)
         {
             Dictionary<(int x, int y), BunkaVGridu> grid = new Dictionary<(int x, int y), BunkaVGridu>();
             double velikostBunky = 5.0;
@@ -192,8 +192,63 @@ namespace GridPath.Helper
 
                 grid[klic].Pozemky.Add(ratedParcel);
             }
+            return grid;
             
         }
+
+        public List<(int x, int y)> DijkstraPath(Dictionary<(int x, int y), BunkaVGridu> grid, (int x, int y) start, (int x, int y) cil)
+        {
+            var vzdalenosti = new Dictionary<(int x, int y), double>();
+            var predchudci = new Dictionary<(int x, int y), (int x, int y)?>();
+            var queue = new PriorityQueue<(int x, int y), double>();
+
+            foreach (var klic in grid.Keys)
+            {
+                vzdalenosti[klic] = double.MaxValue;
+                predchudci[klic] = null;
+            }
+
+            vzdalenosti[start] = 0;
+            queue.Enqueue(start, 0);
+
+            var sousedi = new (int dx, int dy)[] { (0, 1), (0, -1), (1, 0), (-1, 0) }; // 4 směry
+
+            while (queue.Count > 0)
+            {
+                var aktualni = queue.Dequeue();
+
+                foreach (var (dx, dy) in sousedi)
+                {
+                    var soused = (aktualni.x + dx, aktualni.y + dy);
+                    if (!grid.ContainsKey(soused)) continue;
+
+                    double novaVzdalenost = vzdalenosti[aktualni] + grid[soused].StredniHodnota;
+
+                    if (novaVzdalenost < vzdalenosti[soused])
+                    {
+                        vzdalenosti[soused] = novaVzdalenost;
+                        predchudci[soused] = aktualni;
+                        queue.Enqueue(soused, novaVzdalenost);
+                    }
+                }
+            }
+
+            // Rekonstrukce cesty:
+            var cesta = new List<(int x, int y)>();
+            var current = cil;
+
+            while (current != start)
+            {
+                cesta.Add(current);
+                if (predchudci[current] == null) return new(); // neexistuje cesta
+                current = predchudci[current].Value;
+            }
+
+            cesta.Add(start);
+            cesta.Reverse();
+            return cesta;
+        }
+
 
 
 
