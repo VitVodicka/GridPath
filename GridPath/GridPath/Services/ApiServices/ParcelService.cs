@@ -55,21 +55,57 @@ namespace GridPath.Services.ApiServices
         }
         public async Task<DetailedParcel> GetParcelFromId(string id)
         {
+            try {
             string parametersId = "/Parcely/"+id;
             HttpResponseMessage response = await _httpClient.GetAsync(_apiUrl + parametersId);
             response.EnsureSuccessStatusCode();
 
             using Stream stream = await response.Content.ReadAsStreamAsync();
             return await new JsonParser().ParseDetailedParcelData(stream);
+            }
+            catch (HttpRequestException ex)
+            {
+                // Chyba při volání HTTP (např. server nedostupný, 404, atd.)
+                Console.WriteLine("Chyba při volání API: " + ex.Message);
+                return null;
+            }
+            catch (TaskCanceledException ex)
+            {
+                // Timeout požadavku
+                Console.WriteLine("Požadavek trval příliš dlouho: " + ex.Message);
+                return null;
+            }
+            catch (JsonException ex)
+            {
+                // Chyba při parsování JSONu
+                Console.WriteLine("Chyba při čtení odpovědi: " + ex.Message);
+                return null;
+            }
+            catch (Exception ex)
+            {
+                // Vše ostatní
+                Console.WriteLine("Neočekávaná chyba: " + ex.Message);
+                return null;
+            }
 
 
-           
+
+
         }
         public async Task GetMainParametersOfParcels()
         {
-            foreach (var parcel in HomeController.parcelsFromAPIPolygon.Take(10)) 
+            int limit = 10;
+            int count = 0;
+
+            foreach (var parcel in HomeController.parcelsFromAPIPolygon)
+            {
+                if (count >= limit)
+                    break;
+
                 HomeController.parcelsParameters.Add(await GetParcelFromId(parcel.Id));
-            
+                count++;
+            }
+
         }
         public async Task<string> GetNeighbourParcels()
         {
@@ -105,21 +141,33 @@ namespace GridPath.Services.ApiServices
             {
                 //some changes
                 
-                await CalculateApiParcels(_parcelCalculator.CalculateMainParcelAreaPoints(coordinates));            
-                List<string> sideParcels = _parcelCalculator.CalculateSideParcelAreaPoints(coordinates);
+                await CalculateApiParcels(_parcelCalculator.CalculateMainParcelAreaPoints(coordinates));
+                /*List<string> sideParcels = _parcelCalculator.CalculateSideParcelAreaPoints(coordinates);
                 for (int i = 0; i < sideParcels.Count; i++)
                 {
                     await CalculateApiParcels(sideParcels[i]);
-                }
+                }*/
                 await GetMainParametersOfParcels();
-                List < DetailRatedParcel > parcels = _parcelCalculator.CalaculateLandPoints();
+                await _parcelCalculator.GetGridOfRatedParcels(_parcelCalculator.CalaculateLandPoints());
+
+
+
+
                 return "Parcely not implemented";
 
 
             }
+            catch (NullReferenceException ex)
+            {
+                throw new Exception($"Chyba: Objekt je null – {ex.Message}");
+            }
+            catch (KeyNotFoundException ex)
+            {
+                throw new Exception($"Chyba: Klíč nebyl nalezen ve slovníku – {ex.Message}");
+            }
             catch (Exception ex)
             {
-                throw new Exception($"Chyba připojení: {ex.Message}");
+                throw new Exception($"Neznámá chyba – {ex.Message}");
             }
         }
         public async Task CalculateApiParcels(string json)

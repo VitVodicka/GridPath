@@ -66,11 +66,20 @@ namespace GridPath.Helper
                         DruhPozemku fieldType = new DruhPozemku(jsonParcel["druhPozemku"]["kod"].ToString(), jsonParcel["druhPozemku"]["nazev"].ToString());
                         DefinicniBod point = new DefinicniBod(jsonParcel["definicniBod"]["id"].ToString(), jsonParcel["definicniBod"]["x"].ToString(), jsonParcel["definicniBod"]["y"].ToString());
 
-                        ZpusobyOchrany ochrana = null;
-                        if (jsonParcel["zpusobyOchrany"].ToString() != "[]")
+                    ZpusobyOchrany ochrana = null;
+
+                    var zpusobyOchranyArray = jsonParcel["zpusobyOchrany"] as JArray;
+                    if (zpusobyOchranyArray != null && zpusobyOchranyArray.Count > 0)
+                    {
+                        var prvni = zpusobyOchranyArray[0];
+                        var kod = prvni["kod"]?.ToString();
+                        var nazev = prvni["nazev"]?.ToString();
+
+                        if (!string.IsNullOrEmpty(kod) && !string.IsNullOrEmpty(nazev))
                         {
-                            ochrana = new ZpusobyOchrany(jsonParcel["zpusobyOchrany"][0]["kod"].ToString(), jsonParcel["zpusobyOchrany"][0]["nazev"].ToString());
+                            ochrana = new ZpusobyOchrany(kod, nazev);
                         }
+                    }
 
 
                         parcel = new DetailedParcel(jsonParcel["id"].ToString(), jsonParcel["typParcely"].ToString(), jsonParcel["druhCislovaniParcely"].ToString(),
