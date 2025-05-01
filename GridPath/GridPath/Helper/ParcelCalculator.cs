@@ -1,6 +1,7 @@
 ﻿using GridPath.Controllers;
 using GridPath.Helper.Dictionaries;
 using GridPath.Models;
+using GridPath.Models.Grid;
 using GridPath.Models.Parcels;
 using System.Globalization;
 
@@ -142,7 +143,9 @@ namespace GridPath.Helper
                     //TODO check value
                     points += 100;
                 }
-                if (parcel.ZpusobyOchrany.Nazev!=""&&LandDictionaries.ProtectionScores.TryGetValue(LandKey, out int valueProtection))
+                if (parcel.ZpusobyOchrany != null &&
+    !string.IsNullOrEmpty(parcel.ZpusobyOchrany.Nazev) &&
+    LandDictionaries.ProtectionScores.TryGetValue(LandKey, out int valueProtection))
                 {
                     points += valueProtection;
                 }
@@ -168,6 +171,28 @@ namespace GridPath.Helper
 
             }
             return ratedParcels;
+        }
+        public async Task GetGridOfRatedParcels(List<DetailRatedParcel> ratedParcels)
+        {
+            Dictionary<(int x, int y), BunkaVGridu> grid = new Dictionary<(int x, int y), BunkaVGridu>();
+            double velikostBunky = 5.0;
+
+            foreach (var ratedParcel in ratedParcels)
+            {
+
+                int xGrid = (int)Math.Floor(Double.Parse(ratedParcel.DetailedParcel.DefinicniBod.X) / velikostBunky);
+                int yGrid = (int)Math.Floor(Double.Parse(ratedParcel.DetailedParcel.DefinicniBod.Y) / velikostBunky);
+
+                var klic = (xGrid, yGrid);
+
+                if (!grid.ContainsKey(klic))
+                {
+                    grid[klic] = new BunkaVGridu();
+                }
+
+                grid[klic].Pozemky.Add(ratedParcel);
+            }
+            
         }
 
 
