@@ -1,4 +1,5 @@
 ﻿using DotSpatial.Projections;
+using System.Globalization;
 using System.Security.Cryptography.Xml;
 
 namespace GridPath.Helper
@@ -88,7 +89,7 @@ namespace GridPath.Helper
 
             return polygonCoordinates;
         }
-        public static void PrintPolygonCoordinates()
+        private static void PrintPolygonCoordinates()
         {
             Console.WriteLine("Polygon Coordinates:");
             foreach (var coordinate in polygonCoordinates)
@@ -96,6 +97,30 @@ namespace GridPath.Helper
                 Console.WriteLine($"X: {coordinate.x}, Y: {coordinate.y}");
             }
         }
+        public static string CreateMiniSquareJsonFromPoint((double x, double y) coordinates , double offset = 0.1)
+        {
+            var square = new List<(double, double)>
+        {
+        (coordinates.x - offset, coordinates.y - offset),
+        (coordinates.x + offset, coordinates.y - offset),
+        (coordinates.x + offset, coordinates.y + offset),
+        (coordinates.x - offset, coordinates.y + offset)
+        };
+
+            string json = string.Format(CultureInfo.InvariantCulture, @"[
+        {{ ""x"": {0}, ""y"": {1} }},
+        {{ ""x"": {2}, ""y"": {3} }},
+        {{ ""x"": {4}, ""y"": {5} }},
+        {{ ""x"": {6}, ""y"": {7} }}
+        ]",
+            square[0].Item1, square[0].Item2,
+            square[1].Item1, square[1].Item2,
+            square[2].Item1, square[2].Item2,
+            square[3].Item1, square[3].Item2);
+
+            return json;
+        }
+
         public static List<(double, double)> ConvertPointsToList(double x1, double y1, double x2, double y2, double x3, double y3, double x4, double y4)
         {
             List<(double x, double y)> points = new List<(double x, double y)>();
@@ -105,5 +130,10 @@ namespace GridPath.Helper
             points.Add((x4, y4));
             return points;
         }
+        public static (int, int) ConvertCoordinatesFromMapToCoordinatesInGrid((double x, double y) coordinates)
+        {
+            return ((int)Math.Floor(coordinates.x / 5), (int)Math.Floor(coordinates.y / 5));
+        }
+
     }
 }
