@@ -196,11 +196,11 @@ namespace GridPath.Helper
             
         }
 
-        public List<(int x, int y)> DijkstraPath(Dictionary<(int x, int y), BunkaVGridu> grid, (int x, int y) start, (int x, int y) cil)
+        public List<(double x, double y)> DijkstraPath(Dictionary<(double x, double y), BunkaVGridu> grid, (double x, double y) start, (double x, double y) cil)
         {
-            var vzdalenosti = new Dictionary<(int x, int y), double>();
-            var predchudci = new Dictionary<(int x, int y), (int x, int y)?>();
-            var queue = new PriorityQueue<(int x, int y), double>();
+            var vzdalenosti = new Dictionary<(double x, double y), double>();
+            var predchudci = new Dictionary<(double x, double y), (double x, double y)?>();
+            var queue = new PriorityQueue<(double x, double y), double>();
 
             foreach (var klic in grid.Keys)
             {
@@ -211,7 +211,7 @@ namespace GridPath.Helper
             vzdalenosti[start] = 0;
             queue.Enqueue(start, 0);
 
-            var sousedi = new (int dx, int dy)[] { (0, 1), (0, -1), (1, 0), (-1, 0) }; // 4 směry
+            var sousedi = new (double dx, double dy)[] { (0, 1), (0, -1), (1, 0), (-1, 0) }; // 4 směry
 
             while (queue.Count > 0)
             {
@@ -234,7 +234,7 @@ namespace GridPath.Helper
             }
 
             // Rekonstrukce cesty:
-            var cesta = new List<(int x, int y)>();
+            var cesta = new List<(double x, double y)>();
             var current = cil;
 
             while (current != start)
@@ -248,6 +248,7 @@ namespace GridPath.Helper
             cesta.Reverse();
             return cesta;
         }
+
 
 
 
