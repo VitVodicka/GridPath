@@ -7,6 +7,7 @@ using GridPath.Controllers;
 using GridPath.Helper;
 using GridPath.Models;
 using GridPath.Models.Parcels;
+using GridPath.Models.PolygonParcels;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -53,7 +54,7 @@ namespace GridPath.Services.ApiServices
                 throw new Exception($"Chyba připojení: {ex.Message}");
             }
         }
-        public async Task<DetailedParcel> GetParcelFromId(string id)
+        public async Task<DetailedParcel> GetParcelFromId(string id )
         {
             try {
             string parametersId = "/Parcely/"+id;
@@ -140,8 +141,8 @@ namespace GridPath.Services.ApiServices
             try
             {
                 //some changes
-                
-                /*await CalculateApiParcels(_parcelCalculator.CalculateMainParcelAreaPoints(coordinates));
+
+                await CalculateApiParcels(_parcelCalculator.CalculateMainParcelAreaPoints(coordinates));
                 List<string> sideParcels = _parcelCalculator.CalculateSideParcelAreaPoints(coordinates);
                 for (int i = 0; i < sideParcels.Count; i++)
                 {
@@ -150,16 +151,18 @@ namespace GridPath.Services.ApiServices
                 await GetMainParametersOfParcels();
                 //TODO dat tam místa od do
                 //var something = await _parcelCalculator.GetGridOfRatedParcels(_parcelCalculator.CalaculateLandPoints());
+                var (startPoint, endPoint) = await FindBeginningAndEndLandForPoints();
 
-                var something =  _parcelCalculator.DijkstraPath(await _parcelCalculator.GetGridOfRatedParcels(_parcelCalculator.CalaculateLandPoints()),
+                var gridInt = await _parcelCalculator.GetGridOfRatedParcels(_parcelCalculator.CalaculateLandPoints());
+                var gridDouble = gridInt.ToDictionary(k => ((double)k.Key.x, (double)k.Key.y), v => v.Value);
+                var path = _parcelCalculator.DijkstraPath(gridDouble, startPoint, endPoint);
 
-                    CoordinateConversion.ConvertCoordinatesFromMapToCoordinatesInGrid(
-                        CoordinateConversion.ConvertCoordinatesFromMapToKNApiv2(16.23, 49.29)), 
+                /*CoordinateConversion.ConvertCoordinatesFromMapToCoordinatesInGrid(
+                    CoordinateConversion.ConvertCoordinatesFromMapToKNApiv2(16.23, 49.29)), 
 
-                    CoordinateConversion.ConvertCoordinatesFromMapToCoordinatesInGrid(
-                        CoordinateConversion.ConvertCoordinatesFromMapToKNApiv2(16.23, 49.28)));*/
-                
-                FindBeginningAndEndLandForPoints();
+                CoordinateConversion.ConvertCoordinatesFromMapToCoordinatesInGrid(
+                    CoordinateConversion.ConvertCoordinatesFromMapToKNApiv2(16.23, 49.28)));*/
+
 
                 return "Parcely not implemented";
 
@@ -204,21 +207,43 @@ namespace GridPath.Services.ApiServices
                 throw new Exception($"Chyba připojení: {ex.Message}");
             }
         }
-        public async Task FindBeginningAndEndLandForPoints()
+        public async Task<((double x, double y) start, (double x, double y) end)> FindBeginningAndEndLandForPoints()
         {
+            List<DetailedParcel> parcelsFromBeginningAndEndPointWithParameters = new List<DetailedParcel>();
+            (double x, double y) definicniBodyStartPoint;
+            (double x, double y) definicniBodyEndPointPoint;
             //prvně převod na ty body zyčáteční a konečný bod
             //potom dát +0.1 a udělat z toho malý čtvereček
             //zparsovat do JSONu
             //zavolat api
+            //dostat z toho pocatecni body
 
             string startValueJSON = CoordinateConversion.CreateMiniSquareJsonFromPoint(CoordinateConversion.ConvertCoordinatesFromMapToKNApiv2(16.23, 49.29));
-            string endValueJSON= CoordinateConversion.CreateMiniSquareJsonFromPoint(CoordinateConversion.ConvertCoordinatesFromMapToKNApiv2(16.23, 49.28));
-            await CalculateApiParcels(startValueJSON,false);
+            string endValueJSON = CoordinateConversion.CreateMiniSquareJsonFromPoint(CoordinateConversion.ConvertCoordinatesFromMapToKNApiv2(16.23, 49.28));
+            await CalculateApiParcels(startValueJSON, false);
             await CalculateApiParcels(startValueJSON, false);
 
-            
-            //dostat z toho pocatecni body
-            //dat to do grid formátu
+            for (int i = 0; i < HomeController.parcelsFromBeginningAndEndPoint.Count; i++)
+            {
+                DetailedParcel detailed = await GetParcelFromId(HomeController.parcelsFromBeginningAndEndPoint[i].Id);
+                parcelsFromBeginningAndEndPointWithParameters.Add(detailed);
+
+            }
+            definicniBodyStartPoint.x = Double.Parse(parcelsFromBeginningAndEndPointWithParameters[0].DefinicniBod.X);
+            definicniBodyStartPoint.y = Double.Parse(parcelsFromBeginningAndEndPointWithParameters[0].DefinicniBod.Y);
+
+            definicniBodyEndPointPoint.x = Double.Parse(parcelsFromBeginningAndEndPointWithParameters[1].DefinicniBod.X);
+            definicniBodyEndPointPoint.y = Double.Parse(parcelsFromBeginningAndEndPointWithParameters[1].DefinicniBod.Y);
+
+            definicniBodyStartPoint.x = (int)Math.Floor(definicniBodyStartPoint.x / 5);
+            definicniBodyStartPoint.y = (int)Math.Floor(definicniBodyStartPoint.y / 5);
+
+            definicniBodyEndPointPoint.x = (int)Math.Floor(definicniBodyEndPointPoint.x / 5);
+            definicniBodyEndPointPoint.y = (int)Math.Floor(definicniBodyEndPointPoint.y / 5);
+
+
+            return (definicniBodyStartPoint, definicniBodyEndPointPoint);
+
 
 
         }
