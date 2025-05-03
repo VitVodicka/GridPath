@@ -178,7 +178,7 @@ namespace GridPath.Services.ApiServices
                 throw new Exception($"Neznámá chyba – {ex.Message}");
             }
         }
-        public async Task CalculateApiParcels(string json)
+        public async Task CalculateApiParcels(string json, bool isCalculatingFromPolygon=true)
         {
             try
             {
@@ -197,21 +197,26 @@ namespace GridPath.Services.ApiServices
                 }
 
                 using Stream stream = await response.Content.ReadAsStreamAsync();
-                new JsonParser().ParsePolygonParcelData(stream);
+                new JsonParser().ParsePolygonParcelData(stream,isCalculatingFromPolygon );
             }
             catch (Exception ex)
             {
                 throw new Exception($"Chyba připojení: {ex.Message}");
             }
         }
-        public void FindBeginningAndEndLandForPoints()
+        public async Task FindBeginningAndEndLandForPoints()
         {
             //prvně převod na ty body zyčáteční a konečný bod
-            var startValue = CoordinateConversion.ConvertCoordinatesFromMapToKNApiv2(16.23, 49.29);
-            var endValue= CoordinateConversion.ConvertCoordinatesFromMapToKNApiv2(16.23, 49.28);
             //potom dát +0.1 a udělat z toho malý čtvereček
             //zparsovat do JSONu
             //zavolat api
+
+            string startValueJSON = CoordinateConversion.CreateMiniSquareJsonFromPoint(CoordinateConversion.ConvertCoordinatesFromMapToKNApiv2(16.23, 49.29));
+            string endValueJSON= CoordinateConversion.CreateMiniSquareJsonFromPoint(CoordinateConversion.ConvertCoordinatesFromMapToKNApiv2(16.23, 49.28));
+            await CalculateApiParcels(startValueJSON,false);
+            await CalculateApiParcels(startValueJSON, false);
+
+            
             //dostat z toho pocatecni body
             //dat to do grid formátu
 

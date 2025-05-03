@@ -36,9 +36,10 @@ namespace GridPath.Helper
                                 CadastralArea cadastralArea = new CadastralArea(jsonParcel["katastralniUzemi"]["kod"].ToString(), jsonParcel["katastralniUzemi"]["nazev"].ToString());
                                 Parcel parcel = new Parcel(jsonParcel["id"].ToString(), jsonParcel["typParcely"].ToString(), jsonParcel["druhCislovaniParcely"].ToString(),
                                     jsonParcel["kmenoveCisloParcely"].ToString(), jsonParcel["poddeleniCislaParcely"].ToString(), cadastralArea);
-                                
-                                HomeController.parcelsFromAPIPolygon.Add(parcel);
-                                
+                                if(AddToHomeController)
+                                    HomeController.parcelsFromAPIPolygon.Add(parcel);
+                                else if (AddToHomeController == false)
+                                    HomeController.parcelsFromBeginningAndEndPoint.Add(parcel);
                             }
                             else if (jsonReader.TokenType == JsonToken.EndArray)
                             {
@@ -49,54 +50,7 @@ namespace GridPath.Helper
                 }
             }
         }
-        public async Task<List<Parcel>> ParsePointBeginningAndEndParcels(Stream stream, bool AddToHomeController = true)
-        {
-            try
-            {
-                List<Parcel> parcels = new List<Parcel>();
-
-                using StreamReader reader = new StreamReader(stream, Encoding.UTF8);
-                using JsonTextReader jsonReader = new JsonTextReader(reader);
-
-                while (jsonReader.Read())
-                {
-                    if (jsonReader.TokenType == JsonToken.PropertyName && jsonReader.Value?.ToString() == "data")
-                    {
-                        jsonReader.Read(); // Přesun na začátek pole
-
-                        if (jsonReader.TokenType == JsonToken.StartArray)
-                        {
-                            while (jsonReader.Read())
-                            {
-                                if (jsonReader.TokenType == JsonToken.StartObject)
-                                {
-                                    JObject jsonParcel = JObject.Load(jsonReader);
-                                    CadastralArea cadastralArea = new CadastralArea(jsonParcel["katastralniUzemi"]["kod"].ToString(), jsonParcel["katastralniUzemi"]["nazev"].ToString());
-                                    Parcel parcel = new Parcel(jsonParcel["id"].ToString(), jsonParcel["typParcely"].ToString(), jsonParcel["druhCislovaniParcely"].ToString(),
-                                        jsonParcel["kmenoveCisloParcely"].ToString(), jsonParcel["poddeleniCislaParcely"].ToString(), cadastralArea);
-
-                                    parcels.Add(parcel);
-                                }
-                                else if (jsonReader.TokenType == JsonToken.EndArray)
-                                {
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
-                return parcels;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception($"Chyba při parsování dat: {ex.Message}");
-            }
-        }
-
-
-
-
-
+      
 
         public async Task<DetailedParcel> ParseDetailedParcelData(Stream stream)
         {

@@ -97,7 +97,7 @@ namespace GridPath.Helper
                 Console.WriteLine($"X: {coordinate.x}, Y: {coordinate.y}");
             }
         }
-        public static string CreateMiniSquareJsonFromPoint((double x, double y) coordinates , double offset = 0.1)
+        public static string CreateMiniSquareJsonFromPoint((double x, double y) coordinates , double offset = 10)
         {
             var square = new List<(double, double)>
         {
