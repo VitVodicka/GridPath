@@ -15,6 +15,8 @@ namespace GridPath.Controllers
         private readonly ParcelService _parcelService;
        
         public static HashSet<Parcel> parcelsFromAPIPolygon = new HashSet<Parcel>();
+        public static List<Parcel> parcelsFromBeginningAndEndPoint = new List<Parcel>();
+
         public static HashSet<DetailedParcel> parcelsParameters = new HashSet<DetailedParcel>();
 
         // Konstruktor pro injektování ParcelService
