@@ -99,8 +99,8 @@ namespace GridPath.Services.ApiServices
 
             foreach (var parcel in HomeController.parcelsFromAPIPolygon)
             {
-                //if (count >= limit)
-                   // break;
+                if (count >= limit)
+                   break;
 
                 HomeController.parcelsParameters.Add(await GetParcelFromId(parcel.Id));
                 count++;
@@ -141,18 +141,25 @@ namespace GridPath.Services.ApiServices
             {
                 //some changes
                 
-                await CalculateApiParcels(_parcelCalculator.CalculateMainParcelAreaPoints(coordinates));
-                /*List<string> sideParcels = _parcelCalculator.CalculateSideParcelAreaPoints(coordinates);
+                /*await CalculateApiParcels(_parcelCalculator.CalculateMainParcelAreaPoints(coordinates));
+                List<string> sideParcels = _parcelCalculator.CalculateSideParcelAreaPoints(coordinates);
                 for (int i = 0; i < sideParcels.Count; i++)
                 {
                     await CalculateApiParcels(sideParcels[i]);
-                }*/
+                }
                 await GetMainParametersOfParcels();
                 //TODO dat tam místa od do
-                var something = await _parcelCalculator.DijkstraPath(await _parcelCalculator.GetGridOfRatedParcels(_parcelCalculator.CalaculateLandPoints()));
+                //var something = await _parcelCalculator.GetGridOfRatedParcels(_parcelCalculator.CalaculateLandPoints());
 
+                var something =  _parcelCalculator.DijkstraPath(await _parcelCalculator.GetGridOfRatedParcels(_parcelCalculator.CalaculateLandPoints()),
 
+                    CoordinateConversion.ConvertCoordinatesFromMapToCoordinatesInGrid(
+                        CoordinateConversion.ConvertCoordinatesFromMapToKNApiv2(16.23, 49.29)), 
 
+                    CoordinateConversion.ConvertCoordinatesFromMapToCoordinatesInGrid(
+                        CoordinateConversion.ConvertCoordinatesFromMapToKNApiv2(16.23, 49.28)));*/
+                
+                FindBeginningAndEndLandForPoints();
 
                 return "Parcely not implemented";
 
@@ -197,7 +204,21 @@ namespace GridPath.Services.ApiServices
                 throw new Exception($"Chyba připojení: {ex.Message}");
             }
         }
+        public void FindBeginningAndEndLandForPoints()
+        {
+            //prvně převod na ty body zyčáteční a konečný bod
+            var startValue = CoordinateConversion.ConvertCoordinatesFromMapToKNApiv2(16.23, 49.29);
+            var endValue= CoordinateConversion.ConvertCoordinatesFromMapToKNApiv2(16.23, 49.28);
+            //potom dát +0.1 a udělat z toho malý čtvereček
+            //zparsovat do JSONu
+            //zavolat api
+            //dostat z toho pocatecni body
+            //dat to do grid formátu
+
+
+        }
 
     }
+
 
 }
