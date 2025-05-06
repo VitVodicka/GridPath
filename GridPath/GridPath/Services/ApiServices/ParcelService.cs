@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using GridPath.Controllers;
 using GridPath.Helper;
 using GridPath.Models;
-using GridPath.Models.Parcels;
+using GridPath.Models.Parcels.DetailedParcel;
 using GridPath.Models.PolygonParcels;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;

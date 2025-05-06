@@ -3,12 +3,13 @@ using Newtonsoft.Json;
 using System.Text;
 using GridPath.Services.ApiServices;
 using GridPath.Controllers;
-using GridPath.Models.PolygonParcels;
-using GridPath.Models;
-using GridPath.Models.Parcels;
 using System.ComponentModel;
 using System.Collections.Specialized;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
+using GridPath.Models.Parcels.DetailedParcel;
+using GridPath.Models.Parcels.DetailedParcel.DetailedParcelParts;
+using GridPath.Models.Parcels.Parcel;
+using GridPath.Models.Parcels.ParcelParts;
 
 namespace GridPath.Helper
 {
