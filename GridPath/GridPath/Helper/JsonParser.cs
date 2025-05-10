@@ -6,10 +6,9 @@ using GridPath.Controllers;
 using System.ComponentModel;
 using System.Collections.Specialized;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
-using GridPath.Models.Parcels.DetailedParcel;
-using GridPath.Models.Parcels.DetailedParcel.DetailedParcelParts;
-using GridPath.Models.Parcels.Parcel;
-using GridPath.Models.Parcels.ParcelParts;
+using GridPath.Models.Parcels;
+using GridPath.Models;
+using GridPath.Models.PolygonParcels;
 
 namespace GridPath.Helper
 {
@@ -17,6 +16,7 @@ namespace GridPath.Helper
     {
         public async void ParsePolygonParcelData(Stream stream, bool AddToHomeController=true)
         {
+            try { 
             using StreamReader reader = new StreamReader(stream, Encoding.UTF8);
             using JsonTextReader jsonReader = new JsonTextReader(reader);
 
@@ -49,6 +49,11 @@ namespace GridPath.Helper
                         }
                     }
                 }
+            }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Chyba při parsování dat: {ex.Message}");
             }
         }
       

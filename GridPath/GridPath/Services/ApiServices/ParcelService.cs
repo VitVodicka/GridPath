@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using GridPath.Controllers;
 using GridPath.Helper;
 using GridPath.Models;
-using GridPath.Models.Parcels.DetailedParcel;
+using GridPath.Models.Parcels;
 using GridPath.Models.PolygonParcels;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
@@ -143,19 +143,19 @@ namespace GridPath.Services.ApiServices
                 //some changes
 
                 await CalculateApiParcels(_parcelCalculator.CalculateMainParcelAreaPoints(coordinates));
-                List<string> sideParcels = _parcelCalculator.CalculateSideParcelAreaPoints(coordinates);
+                /*List<string> sideParcels = _parcelCalculator.CalculateSideParcelAreaPoints(coordinates);
                 for (int i = 0; i < sideParcels.Count; i++)
                 {
                     await CalculateApiParcels(sideParcels[i]);
-                }
+                }*/
                 await GetMainParametersOfParcels();
                 //TODO dat tam místa od do
                 //var something = await _parcelCalculator.GetGridOfRatedParcels(_parcelCalculator.CalaculateLandPoints());
-                var (startPoint, endPoint) = await FindBeginningAndEndLandForPoints();
+                /*var (startPoint, endPoint) = await FindBeginningAndEndLandForPoints();
 
                 var gridInt = await _parcelCalculator.GetGridOfRatedParcels(_parcelCalculator.CalaculateLandPoints());
                 var gridDouble = gridInt.ToDictionary(k => ((double)k.Key.x, (double)k.Key.y), v => v.Value);
-                var path = _parcelCalculator.DijkstraPath(gridDouble, startPoint, endPoint);
+                var path = _parcelCalculator.DijkstraPath(gridDouble, startPoint, endPoint);*/
 
                 /*CoordinateConversion.ConvertCoordinatesFromMapToCoordinatesInGrid(
                     CoordinateConversion.ConvertCoordinatesFromMapToKNApiv2(16.23, 49.29)), 
@@ -163,7 +163,7 @@ namespace GridPath.Services.ApiServices
                 CoordinateConversion.ConvertCoordinatesFromMapToCoordinatesInGrid(
                     CoordinateConversion.ConvertCoordinatesFromMapToKNApiv2(16.23, 49.28)));*/
 
-
+                var value = _parcelCalculator.CalculateLandPoints();
                 return "Parcely not implemented";
 
 
