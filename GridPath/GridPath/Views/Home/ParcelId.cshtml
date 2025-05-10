@@ -1,13 +1,27 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@model GridPath.Models.Parcels.DetailedParcel
+
+@{
+    ViewData["Title"] = "Detail parcely";
 }
 
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    <h1 class="display-4">Detail parcely</h1>
 
-    <div>
-        <h3>Parcel Id:</h3>
-        <pre>@Model</pre> <!-- Zobrazí data, která přišla z controlleru -->
+    <div class="parcel-details">
+        <p><strong>Id:</strong> @Model.Id</p>
+        <p><strong>Typ parcely:</strong> @Model.TypParcely</p>
+        <p><strong>Druh číslování:</strong> @Model.DruhCislovaniParcely</p>
+        <p><strong>Kmenové číslo:</strong> @Model.KmenoveCisloParcely</p>
+        <p><strong>Poddělení čísla:</strong> @Model.PoddeleniCislaParcely</p>
+        <p><strong>Katastrální území:</strong> @Model.KatastralniUzemi?.Name</p>
+        <p><strong>Výmera:</strong> @Model.Vymera</p>
+        <p><strong>LV:</strong> @Model.Lv?.Cislo</p>
+        <p><strong>Druh pozemku:</strong> @Model.DruhPozemku?.Nazev</p>
+        <p><strong>Stavba:</strong> @Model.Stavba</p>
+        <p><strong>Právo stavby:</strong> @Model.PravoStavby</p>
+        <p><strong>Definiční bod:</strong> @Model.DefinicniBod?</p>
+        <p><strong>Způsob využití:</strong> @Model.ZpusobVyuziti</p>
+        <p><strong>Způsoby ochrany:</strong> @Model.ZpusobyOchrany?.Nazev</p>
+        <p><strong>Řízení plomby:</strong> @Model.RizeniPlomby</p>
     </div>
 </div>

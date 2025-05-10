@@ -33,8 +33,7 @@ namespace GridPath.Controllers
             try
             {
                 string parcelData = await _parcelService.GetParcelFromParameters();
-                // Pøedání dat do View nebo jejich další zpracování
-                return View("Index", parcelData); // Nebo jiný zpùsob zobrazení dat
+                return View("Index", parcelData); 
             }
             catch (Exception ex)
             {
@@ -46,9 +45,8 @@ namespace GridPath.Controllers
         {
             try
             {
-                string parcelData = await _parcelService.GetNeighbourParcels();
-                // Pøedání dat do View nebo jejich další zpracování
-                return View("Neighbour", parcelData); // Nebo jiný zpùsob zobrazení dat
+                string parcelData = await _parcelService.GetNeighbourParcels();      
+                return View("Neighbour", parcelData);
             }
             catch (Exception ex)
             {
@@ -60,11 +58,9 @@ namespace GridPath.Controllers
         {
             try
             {
-                var something = await _parcelService.GetParcelFromId("459379744");
-                return  View("Parcel","data");
-                //string parcelData = await _parcelService.GetParcelFromId();
-                // Pøedání dat do View nebo jejich další zpracování
-               // return View("ParcelId", parcelData); // Nebo jiný zpùsob zobrazení dat
+                DetailedParcel parcel = await _parcelService.GetParcelFromId("459379744");
+                return  View("ParcelId",parcel);
+
             }
             catch (Exception ex)
             {
@@ -78,10 +74,8 @@ namespace GridPath.Controllers
             {
                 string parcelData = await _parcelService.GetParcelsByPolygon
                     (CoordinateConversion.ConvertLineToRectangle(16.23, 49.29, 16.23, 49.28));
-
-
-                // Pøedání dat do View nebo jejich další zpracování
-                return View("Polygon", parcelData); // Nebo jiný zpùsob zobrazení dat
+                
+                return View("Polygon", parcelData); 
             }
             catch (Exception ex)
             {

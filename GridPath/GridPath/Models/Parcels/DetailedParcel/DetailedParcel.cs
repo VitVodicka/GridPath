@@ -2,22 +2,13 @@
 {
     public class DetailedParcel
     {
-        public DetailedParcel(string id, string typParcely, string druhCislovaniParcely, string kmenoveCisloParcely, string poddeleniCislaParcely, CadastralArea katastralniUzemi, string vymera, LV lv, DruhPozemku druhPozemku, string stavba, string pravoStavby, DefinicniBod definicniBod, string zpusobVyuziti, ZpusobyOchrany zpusobyOchrany, string rizeniPlomby)
+        public DetailedParcel(string id, string typParcely, string druhCislovaniParcely, string kmenoveCisloParcely, string poddeleniCislaParcely,
+            CadastralArea katastralniUzemi, string vymera, LV lv, DruhPozemku druhPozemku, string stavba, string pravoStavby, DefinicniBod definicniBod, 
+            string zpusobVyuziti, ZpusobyOchrany zpusobyOchrany, string rizeniPlomby)
         {
-            Id = id;
-            TypParcely = typParcely;
-            DruhCislovaniParcely = druhCislovaniParcely;
-            KmenoveCisloParcely = kmenoveCisloParcely;
-            PoddeleniCislaParcely = poddeleniCislaParcely;
-            KatastralniUzemi = katastralniUzemi;
-            Vymera = vymera;
-            Lv = lv;
-            DruhPozemku = druhPozemku;
-            Stavba = stavba;
-            PravoStavby = pravoStavby;
-            DefinicniBod = definicniBod;
-            ZpusobVyuziti = zpusobVyuziti;
-            ZpusobyOchrany = zpusobyOchrany;
+            Id = id; TypParcely = typParcely; DruhCislovaniParcely = druhCislovaniParcely; KmenoveCisloParcely = kmenoveCisloParcely;
+            PoddeleniCislaParcely = poddeleniCislaParcely; KatastralniUzemi = katastralniUzemi; Vymera = vymera; Lv = lv; DruhPozemku = druhPozemku;
+            Stavba = stavba; PravoStavby = pravoStavby; DefinicniBod = definicniBod; ZpusobVyuziti = zpusobVyuziti; ZpusobyOchrany = zpusobyOchrany;
             RizeniPlomby = rizeniPlomby;
         }
 

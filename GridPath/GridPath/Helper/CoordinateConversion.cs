@@ -26,7 +26,6 @@ namespace GridPath.Helper
 
             // Cílový souřadnicový systém – EPSG:5514
             // EPSG:5514 se využívá pro mapové podklady v České republice, např. v katastru nemovitostí.
-            // Níže je Esri string definující S‑JTSK / Krovak East North.
             string epsg5514Esri =
                 "PROJCS[\"S-JTSK / Krovak East North\", " +
                 "GEOGCS[\"S-JTSK\", " +
@@ -62,7 +61,6 @@ namespace GridPath.Helper
         /// 4. Shifted end point (pointEndRectangle) </returns>
         public static List<(double, double)> ConvertLineToRectangle(double firstPointX, double firstPointY, double secondPointX, double secondPointY)
         {
-            //chyba v čárkách nebo v typu zadávání nebo převodu
             polygonCoordinates.Clear();
 
             var pointBegin = ConvertCoordinatesFromMapToKNApiv2(firstPointX, firstPointY);
@@ -74,18 +72,8 @@ namespace GridPath.Helper
             polygonCoordinates.Add(pointBeginRectangle);
             polygonCoordinates.Add(pointEnd);
             polygonCoordinates.Add(pointEndRectangle);
-            // Pro debug vypíšeme koordináty
-            PrintPolygonCoordinates();
 
-            // Ověříme, že všechny body jsou v povoleném rozsahu
-            /*foreach (var point in polygonCoordinates)
-            {
-                if (point.Item1 < MIN_X || point.Item1 > MAX_X ||
-                    point.Item2 < MIN_Y || point.Item2 > MAX_Y)
-                {
-                    throw new ArgumentException($"Bod ({point.Item1}, {point.Item2}) je mimo povolený rozsah.");
-                }
-            }*/
+            PrintPolygonCoordinates();
 
             return polygonCoordinates;
         }

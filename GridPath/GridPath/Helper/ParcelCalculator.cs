@@ -55,14 +55,14 @@ namespace GridPath.Helper
         }
         public double CalculateRecatangleArea(List<(double x, double y)> points)
         {
-            //using shaon therem
+            //pomocí shaon therem
             int n = points.Count;
             double area = 0;
 
             for (int i = 0; i < n; i++)
             {
                 double x1 = points[i].x, y1 = points[i].y;
-                double x2 = points[(i + 1) % n].x, y2 = points[(i + 1) % n].y; // Cykluje zpět na začátek
+                double x2 = points[(i + 1) % n].x, y2 = points[(i + 1) % n].y; 
                 area += x1 * y2 - y1 * x2;
             }
 
@@ -107,16 +107,23 @@ namespace GridPath.Helper
             }
             return body;
         }
-        public List<DetailRatedParcel> CalaculateLandPoints()
+        public List<DetailRatedParcel> CalculateLandPoints()
         {
             List<DetailRatedParcel> ratedParcels = new List<DetailRatedParcel>();
-            double points ;
+            double points;
             
             foreach (var parcel in HomeController.parcelsParameters)
             {
                 points = 100;
                 string warning = "";
                 var LandKey = (parcel.DruhPozemku.Nazev, int.Parse(parcel.DruhPozemku.Kod));
+
+                string ochranyKod = parcel.ZpusobyOchrany?.Kod;
+                int parsedKod = int.TryParse(ochranyKod, out var tempKod) ? tempKod : 0;
+                var LandKeyProtection = parcel.ZpusobyOchrany != null
+                    ? (parcel.ZpusobyOchrany.Nazev, parsedKod)
+                    : (null, 0);
+
 
                 if (LandDictionaries.NotGoodLandTypes.TryGetValue(LandKey, out int value))
                 {
@@ -128,8 +135,7 @@ namespace GridPath.Helper
                         }
                         else
                         {
-                            points += 0;
-                            points += value;
+                            points += 100;
                         }
                     }
                     else
@@ -140,12 +146,11 @@ namespace GridPath.Helper
                 }
                 else
                 {
-                    //TODO check value
                     points += 100;
                 }
                 if (parcel.ZpusobyOchrany != null &&
     !string.IsNullOrEmpty(parcel.ZpusobyOchrany.Nazev) &&
-    LandDictionaries.ProtectionScores.TryGetValue(LandKey, out int valueProtection))
+    LandDictionaries.ProtectionScores.TryGetValue(LandKeyProtection, out int valueProtection))
                 {
                     points += valueProtection;
                 }
@@ -153,7 +158,7 @@ namespace GridPath.Helper
                 {
                     points += 100;
                 }
-                if(parcel.Stavba == "")
+                if(parcel.Stavba != "")
                 {
                     points = 0;
                 }
@@ -175,83 +180,79 @@ namespace GridPath.Helper
         public async Task<Dictionary<(int x, int y), BunkaVGridu>> GetGridOfRatedParcels(List<DetailRatedParcel> ratedParcels)
         {
             Dictionary<(int x, int y), BunkaVGridu> grid = new Dictionary<(int x, int y), BunkaVGridu>();
-            double velikostBunky = 5.0;
+            double gridCellSize = 5.0;
 
             foreach (var ratedParcel in ratedParcels)
             {
 
-                int xGrid = (int)Math.Floor(Double.Parse(ratedParcel.DetailedParcel.DefinicniBod.X) / velikostBunky);
-                int yGrid = (int)Math.Floor(Double.Parse(ratedParcel.DetailedParcel.DefinicniBod.Y) / velikostBunky);
+                int xGrid = (int)Math.Floor(Double.Parse(ratedParcel.DetailedParcel.DefinicniBod.X) / gridCellSize);
+                int yGrid = (int)Math.Floor(Double.Parse(ratedParcel.DetailedParcel.DefinicniBod.Y) / gridCellSize);
 
-                var klic = (xGrid, yGrid);
+                var key = (xGrid, yGrid);
 
-                if (!grid.ContainsKey(klic))
+                if (!grid.ContainsKey(key))
                 {
-                    grid[klic] = new BunkaVGridu();
+                    grid[key] = new BunkaVGridu();
                 }
 
-                grid[klic].Pozemky.Add(ratedParcel);
+                grid[key].Pozemky.Add(ratedParcel);
             }
             return grid;
             
         }
 
-        public List<(double x, double y)> DijkstraPath(Dictionary<(double x, double y), BunkaVGridu> grid, (double x, double y) start, (double x, double y) cil)
+        public List<(double x, double y)> DijkstraPath(Dictionary<(double x, double y), BunkaVGridu> grid, (double x, double y) start, (double x, double y) goal)
         {
-            var vzdalenosti = new Dictionary<(double x, double y), double>();
-            var predchudci = new Dictionary<(double x, double y), (double x, double y)?>();
+            var distance = new Dictionary<(double x, double y), double>();
+            var predecessors = new Dictionary<(double x, double y), (double x, double y)?>();
             var queue = new PriorityQueue<(double x, double y), double>();
 
             foreach (var klic in grid.Keys)
             {
-                vzdalenosti[klic] = double.MaxValue;
-                predchudci[klic] = null;
+                distance[klic] = double.MaxValue;
+                predecessors[klic] = null;
             }
 
-            vzdalenosti[start] = 0;
+            distance[start] = 0;
             queue.Enqueue(start, 0);
 
-            var sousedi = new (double dx, double dy)[] { (0, 1), (0, -1), (1, 0), (-1, 0) }; // 4 směry
+            var neighbours = new (double dx, double dy)[] { (0, 1), (0, -1), (1, 0), (-1, 0) }; // 4 směry
 
             while (queue.Count > 0)
             {
-                var aktualni = queue.Dequeue();
+                var actual = queue.Dequeue();
 
-                foreach (var (dx, dy) in sousedi)
+                foreach (var (dx, dy) in neighbours)
                 {
-                    var soused = (aktualni.x + dx, aktualni.y + dy);
-                    if (!grid.ContainsKey(soused)) continue;
+                    var neighbour = (actual.x + dx, actual.y + dy);
+                    if (!grid.ContainsKey(neighbour)) continue;
 
-                    double novaVzdalenost = vzdalenosti[aktualni] + grid[soused].StredniHodnota;
+                    double newDistance = distance[actual] + grid[neighbour].StredniHodnota;
 
-                    if (novaVzdalenost < vzdalenosti[soused])
+                    if (newDistance < distance[neighbour])
                     {
-                        vzdalenosti[soused] = novaVzdalenost;
-                        predchudci[soused] = aktualni;
-                        queue.Enqueue(soused, novaVzdalenost);
+                        distance[neighbour] = newDistance;
+                        predecessors[neighbour] = actual;
+                        queue.Enqueue(neighbour, newDistance);
                     }
                 }
             }
 
             // Rekonstrukce cesty:
-            var cesta = new List<(double x, double y)>();
-            var current = cil;
+            var path = new List<(double x, double y)>();
+            var current = goal;
 
             while (current != start)
             {
-                cesta.Add(current);
-                if (predchudci[current] == null) return new(); // neexistuje cesta
-                current = predchudci[current].Value;
+                path.Add(current);
+                if (predecessors[current] == null) return new(); // neexistuje cesta
+                current = predecessors[current].Value;
             }
 
-            cesta.Add(start);
-            cesta.Reverse();
-            return cesta;
+            path.Add(start);
+            path.Reverse();
+            return path;
         }
-
-
-
-
 
     }
 }
