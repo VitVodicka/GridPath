@@ -72,19 +72,16 @@ namespace GridPath.Services.ApiServices
             }
             catch (TaskCanceledException ex)
             {
-                // Timeout požadavku
                 Console.WriteLine("Požadavek trval příliš dlouho: " + ex.Message);
                 return null;
             }
             catch (JsonException ex)
             {
-                // Chyba při parsování JSONu
                 Console.WriteLine("Chyba při čtení odpovědi: " + ex.Message);
                 return null;
             }
             catch (Exception ex)
             {
-                // Vše ostatní
                 Console.WriteLine("Neočekávaná chyba: " + ex.Message);
                 return null;
             }
@@ -100,8 +97,8 @@ namespace GridPath.Services.ApiServices
 
             foreach (var parcel in HomeController.parcelsFromAPIPolygon)
             {
-                if (count >= limit)
-                   break;
+                //if (count >= limit)
+                //   break;
 
                 HomeController.parcelsParameters.Add(await GetParcelFromId(parcel.Id));
                 count++;
@@ -130,56 +127,86 @@ namespace GridPath.Services.ApiServices
                 throw new Exception($"Chyba připojení: {ex.Message}");
             }
         }
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="coordinates">list of X and Y locations in KN API coordinates(EPSG:5514)</param>
-        /// <returns></returns>
-        /// <exception cref="Exception"></exception>
-        public async Task<string> GetParcelsByPolygon(List<(double x, double y)> coordinates)
+        public async Task<int> ReturnNumberOfPossibleCalling()
         {
+            string healthParameter = "/AplikacniSluzby/StavUctu";
+            int numberOfCalling=0;
             try
             {
-                //some changes
+                HttpResponseMessage response = await _httpClient.GetAsync(_apiUrl + healthParameter);
 
-                await CalculateApiParcels(_parcelCalculator.CalculateMainParcelAreaPoints(coordinates));
-                /*List<string> sideParcels = _parcelCalculator.CalculateSideParcelAreaPoints(coordinates);
+                if (response.IsSuccessStatusCode)
+                {
+                    var numberOfCallingJson= await response.Content.ReadAsStringAsync();
+                    JObject obj = JObject.Parse(numberOfCallingJson);
+                    numberOfCalling = 500 - (int)obj["provedenoVolani"];
+                }
+                else
+                {
+                    string responseContent = await response.Content.ReadAsStringAsync();
+                    throw new Exception($"Chyba: {response.StatusCode}, Detailní odpověď: {responseContent}");
+                }
+                
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Chyba připojení: {ex.Message}");
+            }
+            return numberOfCalling;
+        }
+        
+        public async Task<string> GetParcelsByPolygon(List<(double x, double y)> coordinates)
+        {
+            int numberOfCalling = await ReturnNumberOfPossibleCalling();
+            try
+            {
+                
+                if(numberOfCalling > 1)
+                    await CalculateApiParcels(_parcelCalculator.ConvertMainParcelAreaIntoJsonPoints(coordinates));
+
+                List<string> sideParcels = _parcelCalculator.CalculateSideParcelAreaPoints(coordinates);
+
+                if(numberOfCalling < sideParcels.Count)
                 for (int i = 0; i < sideParcels.Count; i++)
                 {
                     await CalculateApiParcels(sideParcels[i]);
-                }*/
+                }
+                numberOfCalling = await ReturnNumberOfPossibleCalling();
+
+                if ((HomeController.parcelsFromAPIPolygon.Count+ sideParcels.Count) < numberOfCalling)
+                {
                 await GetMainParametersOfParcels();
-                //TODO dat tam místa od do
-                //var something = await _parcelCalculator.GetGridOfRatedParcels(_parcelCalculator.CalaculateLandPoints());
-                /*var (startPoint, endPoint) = await FindBeginningAndEndLandForPoints();
+                var (startPoint, endPoint) = await FindBeginningAndEndLandForPoints();
 
-                var gridInt = await _parcelCalculator.GetGridOfRatedParcels(_parcelCalculator.CalaculateLandPoints());
+                var gridInt = await _parcelCalculator.GetGridOfRatedParcels(_parcelCalculator.CalculateLandPoints());
                 var gridDouble = gridInt.ToDictionary(k => ((double)k.Key.x, (double)k.Key.y), v => v.Value);
-                var path = _parcelCalculator.DijkstraPath(gridDouble, startPoint, endPoint);*/
+                var path = _parcelCalculator.DijkstraPath(gridDouble, startPoint, endPoint);
 
-                /*CoordinateConversion.ConvertCoordinatesFromMapToCoordinatesInGrid(
-                    CoordinateConversion.ConvertCoordinatesFromMapToKNApiv2(16.23, 49.29)), 
-
-                CoordinateConversion.ConvertCoordinatesFromMapToCoordinatesInGrid(
-                    CoordinateConversion.ConvertCoordinatesFromMapToKNApiv2(16.23, 49.28)));*/
-
-                var value = _parcelCalculator.CalculateLandPoints();
-                return "Parcely not implemented";
-
-
+                return path.ToString();
+                }
+                else
+                {
+                    throw new Exception("Překročený limit volání API");
+                }
+                
             }
             catch (NullReferenceException ex)
             {
                 throw new Exception($"Chyba: Objekt je null – {ex.Message}");
+                return "Parcely not implemented";
             }
             catch (KeyNotFoundException ex)
             {
                 throw new Exception($"Chyba: Klíč nebyl nalezen ve slovníku – {ex.Message}");
+                return "Parcely not implemented";
             }
             catch (Exception ex)
             {
                 throw new Exception($"Neznámá chyba – {ex.Message}");
+                return "Parcely not implemented";
             }
+            return "Parcely not implemented";
+
         }
         public async Task CalculateApiParcels(string json, bool isCalculatingFromPolygon=true)
         {
@@ -212,11 +239,6 @@ namespace GridPath.Services.ApiServices
             List<DetailedParcel> parcelsFromBeginningAndEndPointWithParameters = new List<DetailedParcel>();
             (double x, double y) definicniBodyStartPoint;
             (double x, double y) definicniBodyEndPointPoint;
-            //prvně převod na ty body zyčáteční a konečný bod
-            //potom dát +0.1 a udělat z toho malý čtvereček
-            //zparsovat do JSONu
-            //zavolat api
-            //dostat z toho pocatecni body
 
             string startValueJSON = CoordinateConversion.CreateMiniSquareJsonFromPoint(CoordinateConversion.ConvertCoordinatesFromMapToKNApiv2(16.23, 49.29));
             string endValueJSON = CoordinateConversion.CreateMiniSquareJsonFromPoint(CoordinateConversion.ConvertCoordinatesFromMapToKNApiv2(16.23, 49.28));
