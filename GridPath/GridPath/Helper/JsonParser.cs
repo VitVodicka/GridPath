@@ -14,49 +14,49 @@ namespace GridPath.Helper
 {
     public class JsonParser
     {
-        public async void ParsePolygonParcelData(Stream stream, bool AddToHomeController=true)
+        public async void ParsePolygonParcelData(Stream stream, bool AddToHomeController = true)
         {
-            try { 
-            using StreamReader reader = new StreamReader(stream, Encoding.UTF8);
-            using JsonTextReader jsonReader = new JsonTextReader(reader);
+            try {
+                using StreamReader reader = new StreamReader(stream, Encoding.UTF8);
+                using JsonTextReader jsonReader = new JsonTextReader(reader);
 
-            while (jsonReader.Read())
-            {
-                // Hledáme začátek pole "data"
-                if (jsonReader.TokenType == JsonToken.PropertyName && jsonReader.Value?.ToString() == "data")
+                while (jsonReader.Read())
                 {
-                    jsonReader.Read(); // Přesun na začátek pole
-
-                    if (jsonReader.TokenType == JsonToken.StartArray)
+                    // Hledáme začátek pole "data"
+                    if (jsonReader.TokenType == JsonToken.PropertyName && jsonReader.Value?.ToString() == "data")
                     {
-                        while (jsonReader.Read())
+                        jsonReader.Read(); // Přesun na začátek pole
+
+                        if (jsonReader.TokenType == JsonToken.StartArray)
                         {
-                            if (jsonReader.TokenType == JsonToken.StartObject)
+                            while (jsonReader.Read())
                             {
-                                JObject jsonParcel = JObject.Load(jsonReader);
-                                CadastralArea cadastralArea = new CadastralArea(jsonParcel["katastralniUzemi"]["kod"].ToString(), jsonParcel["katastralniUzemi"]["nazev"].ToString());
-                                Parcel parcel = new Parcel(jsonParcel["id"].ToString(), jsonParcel["typParcely"].ToString(), jsonParcel["druhCislovaniParcely"].ToString(),
-                                    jsonParcel["kmenoveCisloParcely"].ToString(), jsonParcel["poddeleniCislaParcely"].ToString(), cadastralArea);
-                                if(AddToHomeController)
-                                    HomeController.parcelsFromAPIPolygon.Add(parcel);
-                                else if (AddToHomeController == false)
-                                    HomeController.parcelsFromBeginningAndEndPoint.Add(parcel);
-                            }
-                            else if (jsonReader.TokenType == JsonToken.EndArray)
-                            {
-                                break;
+                                if (jsonReader.TokenType == JsonToken.StartObject)
+                                {
+                                    JObject jsonParcel = JObject.Load(jsonReader);
+                                    CadastralArea cadastralArea = new CadastralArea(jsonParcel["katastralniUzemi"]["kod"].ToString(), jsonParcel["katastralniUzemi"]["nazev"].ToString());
+                                    Parcel parcel = new Parcel(jsonParcel["id"].ToString(), jsonParcel["typParcely"].ToString(), jsonParcel["druhCislovaniParcely"].ToString(),
+                                        jsonParcel["kmenoveCisloParcely"].ToString(), jsonParcel["poddeleniCislaParcely"].ToString(), cadastralArea);
+                                    if (AddToHomeController)
+                                        HomeController.parcelsFromAPIPolygon.Add(parcel);
+                                    else if (AddToHomeController == false)
+                                        HomeController.parcelsFromBeginningAndEndPoint.Add(parcel);
+                                }
+                                else if (jsonReader.TokenType == JsonToken.EndArray)
+                                {
+                                    break;
+                                }
                             }
                         }
                     }
                 }
-            }
             }
             catch (Exception ex)
             {
                 throw new Exception($"Chyba při parsování dat: {ex.Message}");
             }
         }
-      
+
 
         public async Task<DetailedParcel> ParseDetailedParcelData(Stream stream)
         {
@@ -77,20 +77,20 @@ namespace GridPath.Helper
                         DruhPozemku fieldType = new DruhPozemku(jsonParcel["druhPozemku"]["kod"].ToString(), jsonParcel["druhPozemku"]["nazev"].ToString());
                         DefinicniBod point = new DefinicniBod(jsonParcel["definicniBod"]["id"].ToString(), jsonParcel["definicniBod"]["x"].ToString(), jsonParcel["definicniBod"]["y"].ToString());
 
-                    ZpusobyOchrany ochrana = null;
+                        ZpusobyOchrany ochrana = null;
 
-                    var zpusobyOchranyArray = jsonParcel["zpusobyOchrany"] as JArray;
-                    if (zpusobyOchranyArray != null && zpusobyOchranyArray.Count > 0)
-                    {
-                        var prvni = zpusobyOchranyArray[0];
-                        var kod = prvni["kod"]?.ToString();
-                        var nazev = prvni["nazev"]?.ToString();
-
-                        if (!string.IsNullOrEmpty(kod) && !string.IsNullOrEmpty(nazev))
+                        var zpusobyOchranyArray = jsonParcel["zpusobyOchrany"] as JArray;
+                        if (zpusobyOchranyArray != null && zpusobyOchranyArray.Count > 0)
                         {
-                            ochrana = new ZpusobyOchrany(kod, nazev);
+                            var prvni = zpusobyOchranyArray[0];
+                            var kod = prvni["kod"]?.ToString();
+                            var nazev = prvni["nazev"]?.ToString();
+
+                            if (!string.IsNullOrEmpty(kod) && !string.IsNullOrEmpty(nazev))
+                            {
+                                ochrana = new ZpusobyOchrany(kod, nazev);
+                            }
                         }
-                    }
 
 
                         parcel = new DetailedParcel(jsonParcel["id"].ToString(), jsonParcel["typParcely"].ToString(), jsonParcel["druhCislovaniParcely"].ToString(),

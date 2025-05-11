@@ -10,7 +10,7 @@ namespace GridPath.Helper
     public class ParcelCalculator
     {
         List<string> jsonOfSideParcels = new List<string>();
-        public string CalculateMainParcelAreaPoints(List<(double x, double y)> coordinates)
+        public string ConvertMainParcelAreaIntoJsonPoints(List<(double x, double y)> coordinates)
         {
             string json = string.Format(@"[
                 {{ ""x"": {0}, ""y"": {1} }},

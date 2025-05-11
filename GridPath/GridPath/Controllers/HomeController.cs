@@ -32,6 +32,7 @@ namespace GridPath.Controllers
         {
             try
             {
+                _parcelService.ReturnNumberOfPossibleCalling();
                 string parcelData = await _parcelService.GetParcelFromParameters();
                 return View("Index", parcelData); 
             }
