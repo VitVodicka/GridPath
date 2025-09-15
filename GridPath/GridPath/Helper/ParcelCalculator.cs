@@ -118,12 +118,8 @@ namespace GridPath.Helper
                 string warning = "";
                 var LandKey = (parcel.DruhPozemku.Nazev, int.Parse(parcel.DruhPozemku.Kod));
 
-                string ochranyKod = parcel.ZpusobyOchrany?.Kod;
-                int parsedKod = int.TryParse(ochranyKod, out var tempKod) ? tempKod : 0;
-                var LandKeyProtection = parcel.ZpusobyOchrany != null
-                    ? (parcel.ZpusobyOchrany.Nazev, parsedKod)
-                    : (null, 0);
-
+                string ochranyKod = parcel.ZpusobyOchrany?.Kod; int parsedKod = int.TryParse(ochranyKod, out var tempKod) ? tempKod : 0;
+                var LandKeyProtection = parcel.ZpusobyOchrany != null ? (parcel.ZpusobyOchrany.Nazev, parsedKod) : (null, 0);
 
                 if (LandDictionaries.NotGoodLandTypes.TryGetValue(LandKey, out int value))
                 {
@@ -134,23 +130,20 @@ namespace GridPath.Helper
                             points += valueUsages;
                         }
                         else
-                        {
-                            points += 100;
+                        { points += 100;
                         }
                     }
                     else
-                    {
-                        points += value;
+                    { points += value;
                     }
                     
                 }
                 else
-                {
-                    points += 100;
+                { points += 100;
                 }
-                if (parcel.ZpusobyOchrany != null &&
-    !string.IsNullOrEmpty(parcel.ZpusobyOchrany.Nazev) &&
-    LandDictionaries.ProtectionScores.TryGetValue(LandKeyProtection, out int valueProtection))
+                //not sure jestli to je správně
+                if (parcel.ZpusobyOchrany != null && !string.IsNullOrEmpty(parcel.ZpusobyOchrany.Nazev) &&
+                    LandDictionaries.ProtectionScores.TryGetValue(LandKeyProtection, out int valueProtection))
                 {
                     points += valueProtection;
                 }
@@ -158,6 +151,7 @@ namespace GridPath.Helper
                 {
                     points += 100;
                 }
+
                 if(parcel.Stavba != "")
                 {
                     points = 0;
@@ -166,18 +160,17 @@ namespace GridPath.Helper
                 {
                     warning += "Právo stavby";
                 }
-                if(parcel.RizeniPlomby != "")
+                if(parcel.RizeniPlomby != "" || parcel.RizeniPlomby != "[]")
                 {
                     warning+= " " + parcel.RizeniPlomby;
                 }
                 DetailRatedParcel detailedParcel = new DetailRatedParcel(parcel, points,warning);
                 ratedParcels.Add(detailedParcel);
 
-
             }
             return ratedParcels;
         }
-        public async Task<Dictionary<(int x, int y), BunkaVGridu>> GetGridOfRatedParcels(List<DetailRatedParcel> ratedParcels)
+        public async Task<Dictionary<(int x, int y), BunkaVGridu>>  GetGridOfRatedParcels(List<DetailRatedParcel> ratedParcels)
         {
             Dictionary<(int x, int y), BunkaVGridu> grid = new Dictionary<(int x, int y), BunkaVGridu>();
             double gridCellSize = 5.0;
@@ -196,6 +189,7 @@ namespace GridPath.Helper
                 }
 
                 grid[key].Pozemky.Add(ratedParcel);
+                grid[key].UpdateStredniHodnota();
             }
             return grid;
             
