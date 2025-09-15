@@ -18,7 +18,8 @@ namespace GridPath.Controllers
         public static HashSet<DetailedParcel> parcelsParameters = new HashSet<DetailedParcel>();
 
         public static List<Parcel> parcelsFromBeginningAndEndPoint = new List<Parcel>();
-        
+        public static int numberOfPossibleCalling;
+
 
 
         // Konstruktor pro injektování ParcelService

@@ -20,6 +20,7 @@ namespace GridPath.Services.ApiServices
         private readonly string _apiUrl;
         private readonly string _apiKey;
         private ParcelCalculator _parcelCalculator;
+        
 
 
 
@@ -34,7 +35,8 @@ namespace GridPath.Services.ApiServices
 
         public async Task<string> GetParcelFromParameters()
         {
-            string parcelSearchParameters = "/Parcely/Vyhledani?KodKatastralnihoUzemi=778214&TypParcely=PKN&DruhCislovaniParcely=2&KmenoveCisloParcely=1766&PoddeleniCislaParcely=3";
+            string parcelSearchParameters = "/Parcely/Vyhledani?KodKatastralnihoUzemi=778214&TypParcely=PKN&DruhCislovaniParcely=2&" +
+                "KmenoveCisloParcely=1766&PoddeleniCislaParcely=3";
             try
             {
                 HttpResponseMessage response = await _httpClient.GetAsync(_apiUrl+parcelSearchParameters);
@@ -54,54 +56,42 @@ namespace GridPath.Services.ApiServices
                 throw new Exception($"Chyba připojení: {ex.Message}");
             }
         }
-        public async Task<DetailedParcel> GetParcelFromId(string id )
+        public async Task<DetailedParcel> GetParcelFromId(string id)
         {
-            try {
-            string parametersId = "/Parcely/"+id;
-            HttpResponseMessage response = await _httpClient.GetAsync(_apiUrl + parametersId);
-            response.EnsureSuccessStatusCode();
+            try
+            {
+                string parametersId = "/Parcely/" + id;
+                HttpResponseMessage response = await _httpClient.GetAsync(_apiUrl + parametersId);
+                response.EnsureSuccessStatusCode();
 
-            using Stream stream = await response.Content.ReadAsStreamAsync();
-            return await new JsonParser().ParseDetailedParcelData(stream);
+                using Stream stream = await response.Content.ReadAsStreamAsync();
+                return await new JsonParser().ParseDetailedParcelData(stream);
             }
             catch (HttpRequestException ex)
             {
-                // Chyba při volání HTTP (např. server nedostupný, 404, atd.)
-                Console.WriteLine("Chyba při volání API: " + ex.Message);
-                return null;
+                throw new Exception("Chyba při volání API: " + ex.Message, ex);
             }
             catch (TaskCanceledException ex)
             {
-                Console.WriteLine("Požadavek trval příliš dlouho: " + ex.Message);
-                return null;
+                throw new Exception("Požadavek trval příliš dlouho: " + ex.Message, ex);
             }
             catch (JsonException ex)
             {
-                Console.WriteLine("Chyba při čtení odpovědi: " + ex.Message);
-                return null;
+                throw new Exception("Chyba při čtení odpovědi: " + ex.Message, ex);
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Neočekávaná chyba: " + ex.Message);
-                return null;
+                throw new Exception("Neočekávaná chyba: " + ex.Message, ex);
             }
-
-
-
-
         }
+
         public async Task GetMainParametersOfParcels()
         {
-            int limit = 10;
-            int count = 0;
 
             foreach (var parcel in HomeController.parcelsFromAPIPolygon)
             {
-                //if (count >= limit)
-                //   break;
 
                 HomeController.parcelsParameters.Add(await GetParcelFromId(parcel.Id));
-                count++;
             }
 
         }
@@ -127,10 +117,10 @@ namespace GridPath.Services.ApiServices
                 throw new Exception($"Chyba připojení: {ex.Message}");
             }
         }
-        public async Task<int> ReturnNumberOfPossibleCalling()
+        public async void ReturnNumberOfPossibleCalling()
         {
             string healthParameter = "/AplikacniSluzby/StavUctu";
-            int numberOfCalling=0;
+             
             try
             {
                 HttpResponseMessage response = await _httpClient.GetAsync(_apiUrl + healthParameter);
@@ -139,7 +129,7 @@ namespace GridPath.Services.ApiServices
                 {
                     var numberOfCallingJson= await response.Content.ReadAsStringAsync();
                     JObject obj = JObject.Parse(numberOfCallingJson);
-                    numberOfCalling = 500 - (int)obj["provedenoVolani"];
+                    HomeController.numberOfPossibleCalling = 500 - (int)obj["provedenoVolani"];
                 }
                 else
                 {
@@ -152,32 +142,35 @@ namespace GridPath.Services.ApiServices
             {
                 throw new Exception($"Chyba připojení: {ex.Message}");
             }
-            return numberOfCalling;
         }
         
         public async Task<string> GetParcelsByPolygon(List<(double x, double y)> coordinates)
         {
-            int numberOfCalling = await ReturnNumberOfPossibleCalling();
+            //working
+
             try
             {
                 
-                if(numberOfCalling > 1)
+                if(HomeController.numberOfPossibleCalling > 1)
                     await CalculateApiParcels(_parcelCalculator.ConvertMainParcelAreaIntoJsonPoints(coordinates));
 
                 List<string> sideParcels = _parcelCalculator.CalculateSideParcelAreaPoints(coordinates);
 
-                if(numberOfCalling < sideParcels.Count)
+                if(HomeController.numberOfPossibleCalling < sideParcels.Count)
                 for (int i = 0; i < sideParcels.Count; i++)
                 {
                     await CalculateApiParcels(sideParcels[i]);
                 }
-                numberOfCalling = await ReturnNumberOfPossibleCalling();
-
-                if ((HomeController.parcelsFromAPIPolygon.Count+ sideParcels.Count) < numberOfCalling)
+                ReturnNumberOfPossibleCalling();
+                
+                if ((HomeController.parcelsFromAPIPolygon.Count+ sideParcels.Count) < HomeController.numberOfPossibleCalling)
                 {
                 await GetMainParametersOfParcels();
+
+                ReturnNumberOfPossibleCalling();
                 var (startPoint, endPoint) = await FindBeginningAndEndLandForPoints();
 
+                //ended here
                 var gridInt = await _parcelCalculator.GetGridOfRatedParcels(_parcelCalculator.CalculateLandPoints());
                 var gridDouble = gridInt.ToDictionary(k => ((double)k.Key.x, (double)k.Key.y), v => v.Value);
                 var path = _parcelCalculator.DijkstraPath(gridDouble, startPoint, endPoint);
@@ -191,22 +184,15 @@ namespace GridPath.Services.ApiServices
                 
             }
             catch (NullReferenceException ex)
-            {
-                throw new Exception($"Chyba: Objekt je null – {ex.Message}");
-                return "Parcely not implemented";
+            { throw new Exception($"Chyba: Objekt je null – {ex.Message}");
             }
             catch (KeyNotFoundException ex)
-            {
-                throw new Exception($"Chyba: Klíč nebyl nalezen ve slovníku – {ex.Message}");
-                return "Parcely not implemented";
+            { throw new Exception($"Chyba: Klíč nebyl nalezen ve slovníku – {ex.Message}");
             }
             catch (Exception ex)
-            {
-                throw new Exception($"Neznámá chyba – {ex.Message}");
-                return "Parcely not implemented";
+            { throw new Exception($"Neznámá chyba – {ex.Message}"); 
             }
             return "Parcely not implemented";
-
         }
         public async Task CalculateApiParcels(string json, bool isCalculatingFromPolygon=true)
         {
@@ -242,14 +228,20 @@ namespace GridPath.Services.ApiServices
 
             string startValueJSON = CoordinateConversion.CreateMiniSquareJsonFromPoint(CoordinateConversion.ConvertCoordinatesFromMapToKNApiv2(16.23, 49.29));
             string endValueJSON = CoordinateConversion.CreateMiniSquareJsonFromPoint(CoordinateConversion.ConvertCoordinatesFromMapToKNApiv2(16.23, 49.28));
+            
+            if(HomeController.numberOfPossibleCalling > HomeController.parcelsFromBeginningAndEndPoint.Count + 2) { 
+                
+            HomeController.parcelsFromBeginningAndEndPoint.Clear();
             await CalculateApiParcels(startValueJSON, false);
             await CalculateApiParcels(startValueJSON, false);
+
 
             for (int i = 0; i < HomeController.parcelsFromBeginningAndEndPoint.Count; i++)
             {
                 DetailedParcel detailed = await GetParcelFromId(HomeController.parcelsFromBeginningAndEndPoint[i].Id);
                 parcelsFromBeginningAndEndPointWithParameters.Add(detailed);
 
+            }
             }
             definicniBodyStartPoint.x = Double.Parse(parcelsFromBeginningAndEndPointWithParameters[0].DefinicniBod.X);
             definicniBodyStartPoint.y = Double.Parse(parcelsFromBeginningAndEndPointWithParameters[0].DefinicniBod.Y);
@@ -265,8 +257,6 @@ namespace GridPath.Services.ApiServices
 
 
             return (definicniBodyStartPoint, definicniBodyEndPointPoint);
-
-
 
         }
 
