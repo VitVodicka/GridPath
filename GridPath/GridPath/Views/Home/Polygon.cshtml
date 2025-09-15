@@ -7,7 +7,28 @@
     <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
 
     <div>
-        <h3>Polygon properties:</h3>
-        <pre>@Model</pre> <!-- Zobrazí data, která přišla z controlleru -->
+        <h3>Zadejte souřadnice dvou bodů:</h3>
+        <form asp-action="Polygon" method="get">
+            <div>
+                <label>Bod A - X:</label>
+                <input type="number" step="any" name="ax" required />
+                <label>Bod A - Y:</label>
+                <input type="number" step="any" name="ay" required />
+            </div>
+            <div>
+                <label>Bod B - X:</label>
+                <input type="number" step="any" name="bx" required />
+                <label>Bod B - Y:</label>
+                <input type="number" step="any" name="by" required />
+            </div>
+            <button type="submit">Odeslat</button>
+        </form>
     </div>
+    @if (Model != null)
+    {
+        <div>
+            <h3>Polygon properties:</h3>
+            <pre>@Model</pre> <!-- Zobrazí data, která přišla z controlleru -->
+        </div>
+    }
 </div>

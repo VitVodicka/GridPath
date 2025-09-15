@@ -22,7 +22,7 @@ namespace GridPath.Controllers
 
 
 
-        // Konstruktor pro injektov·nÌ ParcelService
+        // Konstruktor pro injektov√°n√≠ ParcelService
         public HomeController(ILogger<HomeController> logger, ParcelService parcelService)
         {
             _logger = logger;
@@ -39,7 +39,7 @@ namespace GridPath.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Chyba p¯i zÌsk·v·nÌ dat o parcele.");
+                _logger.LogError(ex, "Chyba p≈ôi z√≠sk√°v√°n√≠ dat o parcele.");
                 return View("Error");
             }
         }
@@ -52,7 +52,7 @@ namespace GridPath.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Chyba p¯i zÌsk·v·nÌ dat o parcele.");
+                _logger.LogError(ex, "Chyba p≈ôi z√≠sk√°v√°n√≠ dat o parcele.");
                 return View("Error");
             }
         }
@@ -66,22 +66,25 @@ namespace GridPath.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Chyba p¯i zÌsk·v·nÌ dat o parcele.");
+                _logger.LogError(ex, "Chyba p≈ôi z√≠sk√°v√°n√≠ dat o parcele.");
                 return View("Error");
             }
         }
-        public async Task<IActionResult> Polygon()
+        public async Task<IActionResult> Polygon(double? ax, double? ay, double? bx, double? by)
         {
             try
             {
-                string parcelData = await _parcelService.GetParcelsByPolygon
-                    (CoordinateConversion.ConvertLineToRectangle(16.23, 49.29, 16.23, 49.28));
-                
-                return View("Polygon", parcelData); 
+                if (ax.HasValue && ay.HasValue && bx.HasValue && by.HasValue)
+                {
+                    string parcelData = await _parcelService.GetParcelsByPolygon(
+                        CoordinateConversion.ConvertLineToRectangle(ax.Value, ay.Value, bx.Value, by.Value));
+                    return View("Polygon", parcelData);
+                }
+                return View("Polygon");
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Chyba p¯i zÌsk·v·nÌ dat o parcele.");
+                _logger.LogError(ex, "Chyba p≈ôi z√≠sk√°v√°n√≠ dat o parcele.");
                 return View("Error");
             }
         }
