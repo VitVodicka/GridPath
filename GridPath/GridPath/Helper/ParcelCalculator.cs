@@ -170,16 +170,16 @@ namespace GridPath.Helper
             }
             return ratedParcels;
         }
-        public async Task<Dictionary<(int x, int y), BunkaVGridu>>  GetGridOfRatedParcels(List<DetailRatedParcel> ratedParcels)
+        public async Task<Dictionary<(double x, double y), BunkaVGridu>>  GetGridOfRatedParcels(List<DetailRatedParcel> ratedParcels)
         {
-            Dictionary<(int x, int y), BunkaVGridu> grid = new Dictionary<(int x, int y), BunkaVGridu>();
+            Dictionary<(double x, double y), BunkaVGridu> grid = new Dictionary<(double x, double y), BunkaVGridu>();
             double gridCellSize = 5.0;
 
             foreach (var ratedParcel in ratedParcels)
             {
 
-                int xGrid = (int)Math.Floor(Double.Parse(ratedParcel.DetailedParcel.DefinicniBod.X) / gridCellSize);
-                int yGrid = (int)Math.Floor(Double.Parse(ratedParcel.DetailedParcel.DefinicniBod.Y) / gridCellSize);
+                double xGrid = Math.Floor(Double.Parse(ratedParcel.DetailedParcel.DefinicniBod.X) / gridCellSize);
+                double yGrid = Math.Floor(Double.Parse(ratedParcel.DetailedParcel.DefinicniBod.Y) / gridCellSize);
 
                 var key = (xGrid, yGrid);
 

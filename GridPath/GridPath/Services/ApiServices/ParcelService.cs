@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using GridPath.Controllers;
 using GridPath.Helper;
 using GridPath.Models;
+using GridPath.Models.Grid;
 using GridPath.Models.Parcels;
 using GridPath.Models.PolygonParcels;
 using Microsoft.Extensions.Configuration;
@@ -170,12 +171,12 @@ namespace GridPath.Services.ApiServices
                 ReturnNumberOfPossibleCalling();
                 var (startPoint, endPoint) = await FindBeginningAndEndLandForPoints();
 
-                //ended here
-                var gridInt = await _parcelCalculator.GetGridOfRatedParcels(_parcelCalculator.CalculateLandPoints());
-                var gridDouble = gridInt.ToDictionary(k => ((double)k.Key.x, (double)k.Key.y), v => v.Value);
-                var path = _parcelCalculator.DijkstraPath(gridDouble, startPoint, endPoint);
+                    //ended here
+                Dictionary<(double x, double y), BunkaVGridu> grid = await _parcelCalculator.GetGridOfRatedParcels(_parcelCalculator.CalculateLandPoints());
+                var path = _parcelCalculator.DijkstraPath(grid, startPoint, endPoint);
 
-                return path.ToString();
+
+                return string.Join(" -> ", path.Select(p => $"({(p.x*5):F2}, {(p.y*5):F2})"));
                 }
                 else
                 {
