@@ -20,6 +20,8 @@ namespace GridPath.Controllers
         public static List<Parcel> parcelsFromBeginningAndEndPoint = new List<Parcel>();
         public static int numberOfPossibleCalling;
 
+        public static List<double> pointA = new List<double>();
+        public static List<double> pointB = new List<double>();
 
 
         // Konstruktor pro injektování ParcelService
@@ -70,14 +72,30 @@ namespace GridPath.Controllers
                 return View("Error");
             }
         }
-        public async Task<IActionResult> Polygon()
+        public async Task<IActionResult> Polygon(double? latitudePointA, double? longitudePointA, double? latitudePointB, double? longitudePointB)
         {
             try
             {
-                string parcelData = await _parcelService.GetParcelsByPolygon
-                    (CoordinateConversion.ConvertLineToRectangle(16.23, 49.29, 16.23, 49.28));
-                
-                return View("Polygon", parcelData); 
+                if (latitudePointA.HasValue && longitudePointA.HasValue && latitudePointB.HasValue && longitudePointB.HasValue && (latitudePointA!= latitudePointB || longitudePointA!= longitudePointB))
+                {
+                    pointA.Clear();
+                    pointB.Clear();
+
+                    pointA.Add(longitudePointA.Value);
+                    pointA.Add(latitudePointA.Value);
+
+                    pointB.Add(longitudePointB.Value);
+                    pointB.Add(latitudePointB.Value);
+
+                     _parcelService.testingFunction();
+
+
+                    string parcelData = await _parcelService.GetParcelsByPolygon(
+                        CoordinateConversion.ConvertLineToRectangle(longitudePointA.Value, latitudePointA.Value, longitudePointB.Value, latitudePointB.Value));
+                    return View("Polygon", parcelData);
+                    //return View("Polygon", null);
+                }
+                return View("Polygon");
             }
             catch (Exception ex)
             {

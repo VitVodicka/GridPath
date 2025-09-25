@@ -172,8 +172,16 @@ namespace GridPath.Services.ApiServices
                 var (startPoint, endPoint) = await FindBeginningAndEndLandForPoints();
 
                     //ended here
-                Dictionary<(double x, double y), BunkaVGridu> grid = await _parcelCalculator.GetGridOfRatedParcels(_parcelCalculator.CalculateLandPoints());
-                var path = _parcelCalculator.DijkstraPath(grid, startPoint, endPoint);
+                    var ratedParcels = _parcelCalculator.CalculateLandPoints();
+                    var distinctRatedParcels = ratedParcels
+                        .Where(parcel => parcel.DetailedParcel != null)
+                        .GroupBy(parcel => parcel.DetailedParcel.Id)
+                        .Select(group => group.First())
+                        .ToList();
+
+                    Dictionary<(double x, double y), BunkaVGridu> grid = await _parcelCalculator.GetGridOfRatedParcels(distinctRatedParcels);
+
+                    var path = _parcelCalculator.DijkstraPath(grid, startPoint, endPoint);
 
 
                 return string.Join(" -> ", path.Select(p => $"({(p.x*5):F2}, {(p.y*5):F2})"));
@@ -202,7 +210,7 @@ namespace GridPath.Services.ApiServices
                 string parcelUri = "/Parcely/Polygon";
 
                 // Správné zakódování JSON do URL parametru
-               string encodedCoordinates = Uri.EscapeDataString(json);
+                string encodedCoordinates = Uri.EscapeDataString(json);
 
                 HttpResponseMessage response = await _httpClient.GetAsync($"{_apiUrl}{parcelUri}?SeznamSouradnic={json}");
 
@@ -212,7 +220,7 @@ namespace GridPath.Services.ApiServices
                     Console.WriteLine($"❌ Chyba API: {response.StatusCode} - {error}");
                     return;
                 }
-
+                var responseContent = await response.Content.ReadAsStringAsync();
                 using Stream stream = await response.Content.ReadAsStreamAsync();
                 new JsonParser().ParsePolygonParcelData(stream,isCalculatingFromPolygon );
             }
@@ -227,17 +235,23 @@ namespace GridPath.Services.ApiServices
             (double x, double y) definicniBodyStartPoint;
             (double x, double y) definicniBodyEndPointPoint;
 
-            string startValueJSON = CoordinateConversion.CreateMiniSquareJsonFromPoint(CoordinateConversion.ConvertCoordinatesFromMapToKNApiv2(16.23, 49.29));
-            string endValueJSON = CoordinateConversion.CreateMiniSquareJsonFromPoint(CoordinateConversion.ConvertCoordinatesFromMapToKNApiv2(16.23, 49.28));
+            //implement a values from HomeController
+            //error in endValueJSON using separate function
+            string startValueJSON = CoordinateConversion.CreateMiniSquareJsonFromPoint(CoordinateConversion.ConvertCoordinatesFromMapToKNApiv2(HomeController.pointA[0], HomeController.pointA[1]));
+            string endValueJSON = CoordinateConversion.CreateMiniSquareJsonFromPoint(CoordinateConversion.ConvertCoordinatesFromMapToKNApiv2(HomeController.pointB[0], HomeController.pointB[1]));
             
             if(HomeController.numberOfPossibleCalling > HomeController.parcelsFromBeginningAndEndPoint.Count + 2) { 
                 
             HomeController.parcelsFromBeginningAndEndPoint.Clear();
-            await CalculateApiParcels(startValueJSON, false);
-            await CalculateApiParcels(startValueJSON, false);
+            HomeController.parcelsFromBeginningAndEndPoint.Add(HomeController.parcelsFromAPIPolygon.ElementAt(0));
+            HomeController.parcelsFromBeginningAndEndPoint.Add(HomeController.parcelsFromAPIPolygon.Last());
+            
+            //this also
+            //await CalculateApiParcels(startValueJSON, false);
+            //await CalculateApiParcels(endValueJSON, false);
 
 
-            for (int i = 0; i < HomeController.parcelsFromBeginningAndEndPoint.Count; i++)
+                for (int i = 0; i < HomeController.parcelsFromBeginningAndEndPoint.Count; i++)
             {
                 DetailedParcel detailed = await GetParcelFromId(HomeController.parcelsFromBeginningAndEndPoint[i].Id);
                 parcelsFromBeginningAndEndPointWithParameters.Add(detailed);
@@ -259,6 +273,14 @@ namespace GridPath.Services.ApiServices
 
             return (definicniBodyStartPoint, definicniBodyEndPointPoint);
 
+        }
+        public async void testingFunction()
+        {//neukazuje přensý odkud kam
+            string startValueJSON = CoordinateConversion.CreateMiniSquareJsonFromPoint(CoordinateConversion.ConvertCoordinatesFromMapToKNApiv2(HomeController.pointA[0], HomeController.pointA[1]));
+            string endValueJSON = CoordinateConversion.CreateMiniSquareJsonFromPoint(CoordinateConversion.ConvertCoordinatesFromMapToKNApiv2(HomeController.pointB[0], HomeController.pointB[1]));
+
+            await CalculateApiParcels(startValueJSON, false);
+            await CalculateApiParcels(endValueJSON, false);
         }
 
     }
