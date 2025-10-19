@@ -3,6 +3,7 @@ using GridPath.Helper.Dictionaries;
 using GridPath.Models;
 using GridPath.Models.Grid;
 using GridPath.Models.Parcels;
+using System.ComponentModel;
 using System.Globalization;
 
 namespace GridPath.Helper
@@ -32,9 +33,9 @@ namespace GridPath.Helper
 
             #region Recatangle +50
 
-            double editedBeginningPointXPlus50 = coordinates[0].x + 200;
+            double editedBeginningPointXPlus50 = coordinates[0].x + 100;
             double editedbeginningPointY = coordinates[0].y;
-            double editedEndPointXPlus50 = EndPointX + 200;
+            double editedEndPointXPlus50 = EndPointX + 100;
             double editedEndPointY = coordinates[0].y;
 
             List<(double, double)> pointsConvertedToListPlus = CoordinateConversion.ConvertPointsToList(editedBeginningPointXPlus50, editedbeginningPointY, beginningPointX, beginningPointY, EndPointX, EndPointY, editedEndPointXPlus50, EndPointY);
@@ -42,8 +43,8 @@ namespace GridPath.Helper
             #endregion
 
             #region Recatangle -50
-            double editedBeginningPointXMinus50 = coordinates[0].x - 200;
-            double editedEndPointXMinus50 = EndPointX - 200;
+            double editedBeginningPointXMinus50 = coordinates[0].x - 100;
+            double editedEndPointXMinus50 = EndPointX - 100;
 
             List<(double, double)> pointsConvertedToListMinus = CoordinateConversion.ConvertPointsToList(editedBeginningPointXMinus50, coordinates[0].y, beginningPointX, beginningPointY, EndPointX, EndPointY, editedEndPointXMinus50, EndPointY);
             DivideRectangleIntoSmallerParcels(CalculateRecatangleArea(pointsConvertedToListMinus), pointsConvertedToListMinus);
@@ -194,59 +195,161 @@ namespace GridPath.Helper
             return grid;
             
         }
+        //TODO od 15. prvku tak zkusit pnajít jaký by byl nejbližší neighbour
+        //15. prvek (-124001, -230032)
+        // start 49.2668956N, 16.2672894E
+        //end 49.2603700N, 16.2984031E
+        //zkontrolovat, jestli to jde i do hůř hodnot, který můžou mít jediný value
+        //proč se tam připočítává distance
+        //ono když je tam dobrá distance, tak i když střední hodnota u souseda tak je tam 0, tak to tam i přidá
+        //hledá to a pak se to zastaví, ted u 15. vistied
+        //je to fixnuty, ale pak to může nenajit dalšho souseda
+        //zda nebude lepší, když je dám do jinačího
+        //zkontrolovat co tato tak má za properties: [(-124001, -230032)]
+        //u méně pozemků tak to nenajde souseda
 
-        public List<(double x, double y)> DijkstraPath(Dictionary<(double x, double y), BunkaVGridu> grid, (double x, double y) start, (double x, double y) goal)
+        //checknout, když okolo to nenajde pozemky podle osové bitýšky, pokud tam je pravděpodobně stejný definicni bod
+        //from 49.3047700N, 16.2236231E to 49.3133600N, 16.2166278E
+        public List<(double x, double y)> DijkstraPath(
+    Dictionary<(double x, double y), BunkaVGridu> grid,
+    (double x, double y) start,
+    (double x, double y) goal)
         {
-            var distance = new Dictionary<(double x, double y), double>();
-            var predecessors = new Dictionary<(double x, double y), (double x, double y)?>();
-            var queue = new PriorityQueue<(double x, double y), double>();
+            const double EPS = 1e-9;
 
-            foreach (var klic in grid.Keys)
+            // 1) Validace vstupů a průchodnosti
+            if (grid.Count == 0) return new();
+            if (!grid.ContainsKey(start) || !grid.ContainsKey(goal)) return new();
+
+            // 2) Hranice gridu (pro stop podmínku při hledání souseda)
+            double minX = double.PositiveInfinity, maxX = double.NegativeInfinity;
+            double minY = double.PositiveInfinity, maxY = double.NegativeInfinity;
+            foreach (var (gx, gy) in grid.Keys)
             {
-                distance[klic] = double.MaxValue;
-                predecessors[klic] = null;
+                if (gx < minX) minX = gx;
+                if (gx > maxX) maxX = gx;
+                if (gy < minY) minY = gy;
+                if (gy > maxY) maxY = gy;
             }
 
+            // 3) Najdi nejbližší existující buňku v daném směru (0,+1), (0,-1), (+1,0), (-1,0)
+            (double x, double y)? FindNeighbour((double x, double y) u, int dx, int dy)
+            {
+                double cx = u.x;
+                double cy = u.y;
+
+                // Lokální maximum kroků do hrany podle směru (rychlejší než globální limit)
+                int StepsToEdge((double x, double y) p, int ddx, int ddy)
+                {
+                    if (ddx == 1) return (int)(maxX - p.x);
+                    if (ddx == -1) return (int)(p.x - minX);
+                    if (ddy == 1) return (int)(maxY - p.y);
+                    if (ddy == -1) return (int)(p.y - minY);
+                    return 0;
+                }
+
+                int maxSteps = StepsToEdge(u, dx, dy) + 1;
+
+                for (int s = 0; s < maxSteps; s++)
+                {
+                    cx += dx;
+                    cy += dy;
+
+                    if (cx < minX || cx > maxX || cy < minY || cy > maxY)
+                        return null;
+
+                    var cand = (cx, cy);
+                    if (grid.ContainsKey(cand))
+                        return cand;
+                }
+                return null;
+            }
+
+            // 4) Dijkstrovy struktury
+            var distance = new Dictionary<(double x, double y), double>(grid.Count);
+            var predecessors = new Dictionary<(double x, double y), (double x, double y)?>(grid.Count);
+            var queue = new PriorityQueue<(double x, double y), double>();
+            var visited = new HashSet<(double x, double y)>();
+
+            foreach (var k in grid.Keys) { distance[k] = double.MaxValue; predecessors[k] = null; }
             distance[start] = 0;
             queue.Enqueue(start, 0);
 
-            var neighbours = new (double dx, double dy)[] { (0, 1), (0, -1), (1, 0), (-1, 0) }; // 4 směry
+            var neighbours = new (int dx, int dy)[] { (0, 1), (0, -1), (1, 0), (-1, 0) };
+
+            // 5) Hlavní smyčka
 
             while (queue.Count > 0)
             {
-                var actual = queue.Dequeue();
+                // 1) Vezmi vrchol s nejnižší známou vzdáleností
+                if (!queue.TryDequeue(out var u, out var du))
+                    break;
 
+                // 2) Pokud je to zastaralý záznam → přeskoč
+                if (du > distance[u])
+                    continue;
+
+                // 3) Pokud už je zpracovaný → přeskoč
+                if (!visited.Add(u))
+                    continue;
+
+                // 4) Pokud jsme v cíli → ukonči
+                if (u == goal)
+                    break;
+
+                // 5) Projdi sousedy
                 foreach (var (dx, dy) in neighbours)
                 {
-                    var neighbour = (actual.x + dx, actual.y + dy);
-                    if (!grid.ContainsKey(neighbour)) continue;
+                    var nb = FindNeighbour(u, dx, dy);
+                    if (nb is null) continue;
 
-                    double newDistance = distance[actual] + grid[neighbour].StredniHodnota;
+                    var v = nb.Value;
 
-                    if (newDistance < distance[neighbour])
+                    // Pokud buňka není v gridu, přeskoč
+                    if (!grid.TryGetValue(v, out var vCell))
+                        continue;
+
+                    // Zakázané nebo vadné buňky (neprůchodné)
+                    double w = vCell.StredniHodnota;
+                    if (double.IsNaN(w) || double.IsInfinity(w) || w <= EPS)
+                        continue;
+
+                    // Cena cesty do souseda
+                    double newDist = distance[u] + w;
+                    if (double.IsNaN(newDist) || double.IsInfinity(newDist))
+                        continue;
+
+
+
+
+                    //u 12. souseda tak newDist 2590 < 2010
+                    // Relaxace: pokud je nová cesta lepší, aktualizuj
+                    if (newDist+ EPS < distance[v])
                     {
-                        distance[neighbour] = newDistance;
-                        predecessors[neighbour] = actual;
-                        queue.Enqueue(neighbour, newDistance);
+                        distance[v] = newDist;
+                        predecessors[v] = u;
+                        queue.Enqueue(v, newDist);
                     }
                 }
             }
 
-            // Rekonstrukce cesty:
+
+            // 6) Rekonstrukce cesty
+            if (!visited.Contains(goal)) return new();
+
             var path = new List<(double x, double y)>();
-            var current = goal;
-
-            while (current != start)
+            for (var cur = goal; ;)
             {
-                path.Add(current);
-                if (predecessors[current] == null) return new(); // neexistuje cesta
-                current = predecessors[current].Value;
+                path.Add(cur);
+                var p = predecessors[cur];
+                if (p is null) break;
+                cur = p.Value;
             }
-
-            path.Add(start);
             path.Reverse();
             return path;
         }
+
+
 
     }
 }

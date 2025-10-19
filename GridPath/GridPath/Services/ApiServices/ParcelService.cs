@@ -169,7 +169,8 @@ namespace GridPath.Services.ApiServices
                 await GetMainParametersOfParcels();
 
                 ReturnNumberOfPossibleCalling();
-                var (startPoint, endPoint) = await FindBeginningAndEndLandForPoints();
+                    //null error when from 49.3025594N, 16.1784547E to 49.2964586N, 16.1947625E
+                    var (startPoint, endPoint) = await FindBeginningAndEndLandForPoints();
 
                     //ended here
                     var ratedParcels = _parcelCalculator.CalculateLandPoints();
