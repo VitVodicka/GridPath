@@ -183,7 +183,8 @@ namespace GridPath.Services.ApiServices
                     Dictionary<(double x, double y), BunkaVGridu> grid = await _parcelCalculator.GetGridOfRatedParcels(distinctRatedParcels);
 
                     var path = _parcelCalculator.DijkstraPath(grid, startPoint, endPoint);
-
+                    if (path == null || path.Count == 0)
+                        return "Route not Found";
 
                 return string.Join(" -> ", path.Select(p => $"({(p.x*5):F2}, {(p.y*5):F2})"));
                 }
